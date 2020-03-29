@@ -16,8 +16,19 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         Button btn = findViewById(R.id.sign_in);
+        Button skip = findViewById(R.id.btn_skip);
+
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(Login.this,MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -28,5 +39,6 @@ public class Login extends AppCompatActivity {
 
             }
         });
+
     }
 }

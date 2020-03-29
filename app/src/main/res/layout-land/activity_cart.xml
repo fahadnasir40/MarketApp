@@ -103,6 +103,8 @@
 
             />
     </LinearLayout>
+
+
     <TextView
         android:id="@+id/tv_btn_discard_cart"
         android:layout_width="wrap_content"
@@ -110,18 +112,17 @@
         android:text="@string/discard_all"
         android:layout_below="@id/Ll_cart"
         android:textColor="@color/skyBlueColor"
-
+        android:textStyle=""
         android:layout_margin="16dp"
         android:fontFamily="@font/roboto"
 
         />
-
     <Button
 
         android:id="@+id/cart_checkout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/Ll_cart"
         android:layout_centerHorizontal="true"
         android:background="@drawable/shape"
         android:layout_margin="16dp"

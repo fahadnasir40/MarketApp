@@ -12,11 +12,13 @@ import android.widget.TextView;
 import com.devfn.mart.R;
 import com.devfn.mart.model.PostItem;
 
+import java.text.NumberFormat;
+
 public class Post extends AppCompatActivity {
 
     private ImageView image;
     private TextView name,description,price,deliveryTime,quantity;
-    private Button backButton;
+    private Button backButton,cartButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,10 @@ public class Post extends AppCompatActivity {
 
 //        image.setImageResource(post.getPhoto());
         name.setText(post.getName());
-        price.setText("Rs. "+ Integer.toString(post.getPrice()));
+        NumberFormat myFormat = NumberFormat.getInstance();
+        myFormat.setGroupingUsed(true); // this will also round numbers, 3
+
+        price.setText("Rs. "+ myFormat.format(post.getPrice()));
         quantity.setText("Items Available: "+Integer.toString(post.getQuantity()));
         deliveryTime.setText("Delivery Time: "+post.getDeliveryTime());
         description.setText(post.getDescription());
@@ -51,6 +56,16 @@ public class Post extends AppCompatActivity {
                 Intent intent  = new Intent(Post.this,MainActivity.class);
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        cartButton = findViewById(R.id.btn_cart);
+        cartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Post.this,Cart.class);
                 startActivity(intent);
             }
         });

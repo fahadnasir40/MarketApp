@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.Checkout">
+
+    <androidx.appcompat.widget.Toolbar
+
+        android:id="@+id/checkout_toolbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/toolbar_title_checkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Checkout"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto"
+                android:textSize="18sp"
+                android:textFontWeight="200"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@id/btn_back_checkout"/>
+
+
+            <Button
+
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:id="@+id/btn_back_checkout"
+                android:padding="32dp"
+                android:background="@drawable/ic_arrow_back_black_24dp"
+                />
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order# 1222312312"
+        android:layout_below="@id/checkout_toolbar"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="bold"
+        android:id="@+id/checkout_order_no"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Amount: Rs 122,000"
+        android:layout_below="@id/checkout_order_no"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_totalAmount"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Method: Cash on delivery"
+        android:layout_below="@id/checkout_order_date"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_payment_method"
+
+        />
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order Date: 29/03/20"
+        android:layout_below="@id/checkout_totalAmount"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_order_date"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivery Details"
+        android:layout_below="@id/checkout_payment_method"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="bold"
+        android:id="@+id/checkout_delivery_details_title"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fahad Nasir"
+        android:layout_marginEnd="16dp"
+        android:layout_below="@id/checkout_delivery_details_title"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_delivery_name"
+
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact Number: 03097727867"
+        android:layout_below="@id/checkout_delivery_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_delivery_contact"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address: House 97, Ahmed Yar Block,Mustafa Town, Lahore"
+        android:layout_below="@id/checkout_delivery_contact"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:id="@+id/checkout_delivery_address"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Delivery details"
+        android:layout_below="@id/checkout_delivery_address"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="14sp"
+        android:textColor="@color/skyBlueColor"
+        android:fontFamily="@font/roboto"
+        android:textStyle="bold"
+        android:textFontWeight="100"
+        android:id="@+id/checkout_change_delivery_details"
+
+        />
+
+    <Button
+        android:id="@+id/btn_confirm_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/checkout_change_delivery_details"
+        android:layout_margin="32dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape"
+        android:text="Confirm Order   "
+        android:drawableEnd="@drawable/ic_check_black_24dp"
+        android:textColor="@color/white"
+        android:padding="16dp"
+        />
+</RelativeLayout>
