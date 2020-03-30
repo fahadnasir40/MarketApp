@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.devfn.mart.R;
 
@@ -16,8 +17,19 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button btn = findViewById(R.id.sign_in);
+        Button btnSignIn = findViewById(R.id.sign_in);
+        Button btnSignUp = findViewById(R.id.sign_up);
         Button skip = findViewById(R.id.btn_skip);
+
+        TextView forgotPassword = findViewById(R.id.forgetPassword);
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Login.this,ResetPassword.class);
+                startActivity(intent);
+            }
+        });
 
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,7 +41,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -37,6 +49,14 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
                 finish();
 
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Login.this,Register.class);
+                startActivity(intent);
             }
         });
 

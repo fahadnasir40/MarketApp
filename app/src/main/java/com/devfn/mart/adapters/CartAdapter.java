@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.devfn.mart.R;
 import com.devfn.mart.activities.Post;
 import com.devfn.mart.model.PostItem;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -41,9 +42,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
-//        holder.image.setImageResource(PostItems.get(position).getPhoto());
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true); // this will also round numbers, 3
+
+
+        Picasso.with(mContext).load(PostItems.get(position).getPhoto()).fit().centerCrop()
+                .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
+                .error(R.drawable.ic_close_black_24dp)
+                .into(holder.image);
 
         holder.name.setText(PostItems.get(position).getName());
         holder.price.setText("Rs. "+ myFormat.format(PostItems.get(position).getPrice()));

@@ -20,11 +20,10 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="450px"
             android:layout_height="450px"
             android:id="@+id/item_img"
             android:layout_centerHorizontal="true"
-            android:background="@color/LightSkyBlue"
             android:layout_margin="8dp"
             android:padding="8dp"
             />

@@ -33,11 +33,10 @@ public class Cart extends AppCompatActivity {
 
         postsList = new ArrayList<>();
 
-        PostItem item1 = new PostItem(1,2,850,234,"Redmi Note 8 pro","Mobile phone","7 days");
-        PostItem item2 = new PostItem(1,2,90000,234,"Samsung Galaxy S20 Ultra ","Best Mobile phone","20 days");
-        PostItem item3 = new PostItem(1,2,850,234,"Redmi Note 8 pro","Mobile phone","7 days");
-        PostItem item4 = new PostItem(1,2,90000,234,"Samsung Galaxy S20 Ultra ","Best Mobile phone","20 days");
-
+        PostItem item1 = new PostItem(R.drawable.redmi_note_8_pro,2,42000,234,"Redmi Note 8 pro","Mobile phone","7 days");
+        PostItem item2 = new PostItem(R.drawable.sample_image,2,98000,234,"Samsung Galaxy S20 Ultra  ","Best Mobile phone","20 days");
+        PostItem item3 = new PostItem(R.drawable.redmi_note_8_pro,2,42000,234,"Redmi Note 8 pro","Mobile phone","7 days");
+        PostItem item4 = new PostItem(R.drawable.sample_image,2,98000,234,"Samsung Galaxy S20 Ultra ","Best Mobile phone","20 days");
         postsList.add(item1);
         postsList.add(item2);
         postsList.add(item3);

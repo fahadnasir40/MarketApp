@@ -5,6 +5,13 @@
     <string name="email">Email</string>
     <string name="sign_up">Sign Up</string>
     <string name="forgot_password">Forgot Password?</string>
-    <string name="discard_all"><u>Discard All</u></string>
+    <string name="discard_all">Discard All</string>
+    <string name="register">Sign Up</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="send_password">Request Reset Password</string>
+    <string name="reset_password_title">Enter your email address you are using for your account
+        below and we will send you a password reset link</string>
 
 </resources>

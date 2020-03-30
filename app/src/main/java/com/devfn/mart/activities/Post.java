@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.devfn.mart.R;
 import com.devfn.mart.model.PostItem;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 
@@ -38,7 +39,12 @@ public class Post extends AppCompatActivity {
         quantity = findViewById(R.id.post_quantity);
         description = findViewById(R.id.post_description);
 
-//        image.setImageResource(post.getPhoto());
+
+        Picasso.with(this).load(post.getPhoto()).fit().centerCrop()
+                .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
+                .error(R.drawable.ic_close_black_24dp)
+                .into(image);
+
         name.setText(post.getName());
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true); // this will also round numbers, 3
