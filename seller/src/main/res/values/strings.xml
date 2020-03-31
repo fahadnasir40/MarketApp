@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mart Seller</string>
+    <string name="post_name">Name</string>
+    <string name="price">Price</string>
+    <string name="total_items">Total Items</string>
+    <string name="delivery_days">Max Delivery Day</string>
+    <string name="item_description">Item Description</string>
+</resources>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CreatePost"
+    android:fillViewport="true">
+
+<RelativeLayout
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+
+    <Toolbar
+        android:id="@+id/createPostToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:titleTextColor="@color/white"
+        android:layout_alignParentTop="true"
+        tools:targetApi="m">
+
+        <Button
+
+            android:id="@+id/btn_back_create_post"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/ic_arrow_back_black_24dp"
+            android:padding="32dp" />
+
+
+        <TextView
+            android:id="@+id/toolbar_title_create_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+
+            android:fontFamily="@font/roboto"
+            android:text="Create Post"
+            android:textColor="@color/white"
+
+            android:textFontWeight="200"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </Toolbar>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutName"
+        style="@style/editTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textStyle"
+
+        android:layout_centerInParent="true"
+
+        android:layout_below="@id/createPostToolbar">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/post_name"
+            android:inputType="text"
+            android:maxLength="60" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutPrice"
+        style="@style/editTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textStyle"
+
+        android:layout_centerInParent="true"
+
+        android:layout_below="@id/textInputLayoutName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/price"
+            android:inputType="number"
+            android:maxLength="10" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutDeliveryDays"
+        style="@style/editTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textStyle"
+
+        android:layout_centerInParent="true"
+
+        android:layout_below="@id/textInputLayoutTotalItems">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_delivery_days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/delivery_days"
+            android:inputType="number"
+            android:maxLength="3" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutTotalItems"
+        style="@style/editTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+        android:focusable="true"
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textStyle"
+
+        android:layout_centerInParent="true"
+
+        android:layout_below="@id/textInputLayoutPrice">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_total_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/total_items"
+            android:inputType="number"
+            android:maxLength="5" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutDescription"
+        style="@style/editTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textStyle"
+
+        android:layout_centerInParent="true"
+
+        android:layout_below="@id/textInputLayoutDeliveryDays">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/item_description"
+            android:inputType="textMultiLine"
+            android:maxLines="20" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Button
+        android:id="@+id/btn_upload_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textInputLayoutDescription"
+        android:layout_margin="32dp"
+        android:background="@color/colorPrimary"
+        android:padding="16dp"
+        android:text="Upload Image"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/image_id"
+        android:layout_width="400px"
+        android:layout_height="400px"
+
+        android:layout_toEndOf="@id/btn_upload_image"
+        android:layout_below="@id/textInputLayoutDescription"
+        android:layout_margin="32dp"
+     />
+
+    <Button
+        android:id="@+id/btn_post_now"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_upload_image"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="@color/colorPrimary"
+        android:padding="16dp"
+        android:text="Post Now"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+
+
+
+</RelativeLayout>
+</ScrollView>

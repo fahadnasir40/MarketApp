@@ -1,2 +1,4 @@
-include ':app'
+include ':buyer'
 rootProject.name='mart'
+include ':seller'
+include ':common'
