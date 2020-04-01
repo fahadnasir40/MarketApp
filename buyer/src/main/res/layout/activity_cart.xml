@@ -53,13 +53,46 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <LinearLayout
+
+        android:id="@+id/ll_item_not_found"
+        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_below="@id/cart_toolbar"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <ImageView
+
+            android:id="@+id/img_cart"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="32dp"
+            android:background="@drawable/shopping_cart"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+            android:text="Your cart is empty"
+            android:textSize="22sp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/black"
+            />
+
+    </LinearLayout>
+
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_cart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/cart_toolbar"
-        android:layout_margin="4dp"
+        android:layout_margin="8dp"
         android:layout_marginTop="24dp"
         />
 
@@ -69,6 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rv_cart"
+        android:visibility="gone"
         >
 
         <TextView
@@ -115,6 +149,7 @@
         android:textSize="14sp"
         android:layout_margin="16dp"
         android:fontFamily="@font/roboto"
+        android:visibility="gone"
 
         />
 
@@ -132,10 +167,12 @@
         android:padding="8dp"
         android:text="     Checkout "
         android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone"/>
 
 
 </RelativeLayout>
+
 
 
 </ScrollView>

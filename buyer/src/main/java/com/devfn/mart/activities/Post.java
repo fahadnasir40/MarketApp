@@ -1,25 +1,48 @@
 package com.devfn.mart.activities;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.devfn.common.model.OrderModel;
 import com.devfn.mart.R;
 import com.devfn.common.model.PostItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Map;
 
 public class Post extends AppCompatActivity {
 
     private ImageView image;
     private TextView name,description,price,deliveryTime,quantity;
-    private Button backButton,cartButton;
+    private Button backButton,cartButton,addToCartButton;
+    private PostItem post;
+    private OrderModel cart;
+    private ProgressDialog progressDialog;
+
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +53,10 @@ public class Post extends AppCompatActivity {
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
 
-        PostItem post =  (PostItem) bundle.getSerializable("post_object");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading cart data. Please wait");
+
+        post =  (PostItem) bundle.getSerializable("post_object");
 
         image = findViewById(R.id.post_img);
         name = findViewById(R.id.post_name);
@@ -38,7 +64,7 @@ public class Post extends AppCompatActivity {
         deliveryTime = findViewById(R.id.post_delivery_time);
         quantity = findViewById(R.id.post_quantity);
         description = findViewById(R.id.post_description);
-
+        addToCartButton = findViewById(R.id.btn_addToCart);
 
         Picasso.with(this).load(post.getPhoto()).fit().centerCrop()
                 .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
@@ -52,7 +78,9 @@ public class Post extends AppCompatActivity {
         price.setText("Rs. "+ myFormat.format(post.getPrice()));
         quantity.setText("Items Available: "+Integer.toString(post.getQuantity()));
         deliveryTime.setText("Delivery Time: "+post.getDeliveryTime() +" days");
-        description.setText(post.getDescription());
+
+        if(!post.getDescription().equals(""))
+            description.setText(post.getDescription());
 
 
         backButton = findViewById(R.id.btn_back_post);
@@ -75,5 +103,118 @@ public class Post extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        addToCartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(FirebaseAuth.getInstance().getCurrentUser()==null)
+                    showDialog();
+                else
+                    addItemToCart();
+            }
+        });
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("cart");
+
     }
+
+    private void addItemToCart(){
+
+
+        if(post != null && FirebaseAuth.getInstance().getUid() != null){
+            progressDialog.show();
+            final String userId = FirebaseAuth.getInstance().getUid();
+
+            if(databaseReference != null){
+                databaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChildren()){
+                            for(DataSnapshot ds:dataSnapshot.getChildren()){
+
+                                 cart = ds.getValue(OrderModel.class);
+
+                            }
+                        }
+                        else{
+                                cart = new OrderModel();
+                                String key = databaseReference.push().getKey();
+                                cart.setOrderNo(key);
+                                cart.setDeliverUserId(FirebaseAuth.getInstance().getUid());
+
+                        }
+
+                        progressDialog.dismiss();
+                        cart.addItems(post);
+                        insertInDB();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(Post.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+
+
+        }
+    }
+
+    private void insertInDB(){
+
+        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(Post.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if(task.isSuccessful())
+                    Toast.makeText(Post.this,"Item added to cart",Toast.LENGTH_SHORT).show();
+            }});
+    }
+
+    private void showDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Sign In to your Account");
+
+        builder.setMessage("Please sign in to your account before adding item to the cart.");
+
+        builder.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                dialog.dismiss();
+
+                Intent intent = new Intent(Post.this,Login.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
 }

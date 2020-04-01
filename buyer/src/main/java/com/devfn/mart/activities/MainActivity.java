@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -82,13 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
         postsList.clear();
 
-
-
         itemAdapter = new ItemAdapter(postsList,MainActivity.this);
         recyclerView.setAdapter(itemAdapter);
 
         Query query = databaseReference.orderByChild("datePosted");
+
         query.addChildEventListener(childEventListener);
+
         progressDialog.show();
 
         mHandler.sendMessageDelayed(new Message(), 4000);
@@ -98,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             PostItem postItem = dataSnapshot.getValue(PostItem.class);
-            postsList.add(postItem);
+
+            postsList.add(0,postItem);      //adding item to the beginning
 
             if(progressDialog.isShowing())
                 progressDialog.dismiss();

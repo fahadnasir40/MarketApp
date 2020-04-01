@@ -63,12 +63,11 @@
         android:id="@+id/post_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/post_delivery_time"
         android:layout_below="@id/post_toolbar"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="8dp"
         android:layout_toEndOf="@+id/post_img"
         android:fontFamily="@font/roboto"
         android:text="Rs. 850"
@@ -85,6 +84,7 @@
         android:textSize="16sp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="32dp"
         android:textStyle="bold"
         android:fontFamily="@font/roboto"
         android:layout_below="@+id/post_img"
@@ -139,7 +139,7 @@
         android:id="@+id/post_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Item Description is the best source of the image"
+        android:text="No description available"
         android:layout_below="@id/post_description_title"
         android:fontFamily="@font/roboto"
         android:layout_marginStart="16dp"
@@ -147,8 +147,7 @@
         android:textSize="14sp"
         android:textStyle="normal"
         android:textColor="@color/black"
-
-        />
+     />
 
 
     <Button
@@ -158,14 +157,13 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="32dp"
         android:background="@drawable/shape"
-        android:layout_below="@id/post_description"
+        android:layout_below="@id/post_price"
         android:text=" Add to Cart"
         android:textColor="@color/white"
         android:padding="12dp"
         android:fontFamily="@font/roboto"
         android:textStyle="bold"
-        android:drawableStart="@drawable/ic_add_shopping_cart_black_24dp"
-        />
+        android:drawableStart="@drawable/ic_add_shopping_cart_black_24dp" />
 
 
 

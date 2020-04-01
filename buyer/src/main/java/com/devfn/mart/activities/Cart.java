@@ -1,28 +1,57 @@
 package com.devfn.mart.activities;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.devfn.common.model.OrderModel;
+import com.devfn.common.model.CartItemInterface;
 import com.devfn.mart.R;
 import com.devfn.mart.adapters.CartAdapter;
 import com.devfn.common.model.PostItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
-public class Cart extends AppCompatActivity {
+public class Cart extends AppCompatActivity implements CartItemInterface,AdapterView.OnItemSelectedListener{
 
     private List<PostItem> postsList;
     private Button backButton,checkoutButton;
+    private  TextView totalPrice,discardAll;
+    private ProgressDialog progressDialog;
+    private OrderModel orderModel;
     private int totalAmount = 0;
+
+    DatabaseReference databaseReference;
+    CartAdapter cartAdapter;
+
+
+    private boolean layoutGone = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +59,24 @@ public class Cart extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
 
         postsList = new ArrayList<>();
-
-//        PostItem item1 = new PostItem("1",R.drawable.redmi_note_8_pro,2,42000,"22/12/20","Redmi Note 8 pro","Mobile phone","7 days");
-//        PostItem item2 = new PostItem("1",R.drawable.sample_image,2,98000,"22/12/20","Samsung Galaxy S20 Ultra ","Best Mobile phone","20 days");
-//        PostItem item3 = new PostItem("1",R.drawable.redmi_note_8_pro,2,42000,"22/12/20","Redmi Note 8 pro","Mobile phone","7 days");
-//        PostItem item4 = new PostItem("1",R.drawable.sample_image,2,98000,"22/12/20","Samsung Galaxy S20 Ultra","Best Mobile phone","20 days");
-//        postsList.add(item1);
-//        postsList.add(item2);
-//        postsList.add(item3);
-//        postsList.add(item4);
-
+        progressDialog = new ProgressDialog(this);
+        totalPrice = findViewById(R.id.item_cart_total_price);
+        discardAll = findViewById(R.id.tv_btn_discard_cart);
+        checkoutButton = findViewById(R.id.cart_checkout);
 
         RecyclerView recyclerView = findViewById(R.id.rv_cart);
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        CartAdapter cartAdapter = new CartAdapter(postsList,this);
+        cartAdapter = new CartAdapter(postsList,this);
         recyclerView.setAdapter(cartAdapter);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("cart");
+
+        readCartData();
+
 
         backButton = findViewById(R.id.btn_back_cart);
 
@@ -61,11 +90,8 @@ public class Cart extends AppCompatActivity {
             }
         });
 
-        TextView totalPrice = findViewById(R.id.item_cart_total_price);
+        totalPrice.setText("Rs. "+ totalAmount);
 
-        totalPrice.setText("Rs. "+ computeTotal());
-
-        checkoutButton = findViewById(R.id.cart_checkout);
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,18 +101,206 @@ public class Cart extends AppCompatActivity {
             }
         });
 
+
+        discardAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
+
+
+        emptyLayout();
+        progressDialog.show();
     }
 
-    String computeTotal(){
-        for(int i = 0;i<postsList.size();i++){
-            totalAmount += postsList.get(i).getPrice();
+
+    private final Handler mHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            super.handleMessage(msg);
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+                emptyLayout();
+
+            }
+        }
+    };
+
+    void readCartData(){
+
+        progressDialog.setMessage("Loading Cart. Please wait.");
+        postsList.clear();
+
+
+        mHandler.sendMessageDelayed(new Message(), 3000);
+
+        if(databaseReference != null){
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    for(DataSnapshot ds:dataSnapshot.getChildren()){
+                        orderModel = ds.getValue(OrderModel.class);
+
+                        HashMap<String, PostItem> map = orderModel.getItems();
+
+                        Collection<PostItem> values = map.values();
+
+                        postsList.addAll(values);
+
+                        totalAmount = orderModel.getTotalOrderPrice();
+
+
+                        if(progressDialog.isShowing())
+                            progressDialog.dismiss();
+
+                        if(layoutGone && orderModel!=null)
+                            showLayout();
+                    }
+
+                    totalPrice.setText("Rs. "+ totalAmount);
+                    cartAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(Cart.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
-        NumberFormat myFormat = NumberFormat.getInstance();
-        myFormat.setGroupingUsed(true); // this will also round numbers, 3
-        // decimal places
-
-        return myFormat.format(totalAmount);
     }
 
+
+    private void showDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Discard All Items");
+
+        builder.setMessage("This will remove all the items from the cart.");
+
+        builder.setPositiveButton("Discard", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                dialog.dismiss();
+
+                discardCart();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+    void discardCart(){
+
+        if(databaseReference!=null)
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+
+                        if(postsList!=null){
+                            postsList.clear();
+                            cartAdapter.notifyDataSetChanged();
+                            emptyLayout();
+                        }
+                    }
+                }
+            });
+    }
+
+    void emptyLayout(){
+
+        if(postsList.size() == 0){
+
+
+            LinearLayout linearLayout = findViewById(R.id.Ll_cart);
+            linearLayout.setVisibility(View.GONE);
+            checkoutButton.setVisibility(View.GONE);
+            discardAll.setVisibility(View.GONE);
+
+            LinearLayout linearLayout1 = findViewById(R.id.ll_item_not_found);
+            linearLayout1.setVisibility(View.VISIBLE);
+            layoutGone = true;
+
+        }
+
+    }
+
+    void showLayout(){
+
+        if(postsList.size() != 0 && layoutGone){
+
+            LinearLayout linearLayout = findViewById(R.id.Ll_cart);
+            linearLayout.setVisibility(View.VISIBLE);
+            checkoutButton.setVisibility(View.VISIBLE);
+            discardAll.setVisibility(View.VISIBLE);
+
+            LinearLayout linearLayout1 = findViewById(R.id.ll_item_not_found);
+            linearLayout1.setVisibility(View.GONE);
+            layoutGone = false;
+        }
+
+    }
+
+
+    @Override
+    public void RemoveItemFromCart(final PostItem post) {
+
+        if(orderModel!=null){
+
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("items").child(post.getPostId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+
+                        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("totalOrderPrice").setValue(totalAmount-post.getPrice());
+                        totalAmount-= post.getPrice();
+
+                        totalPrice.setText("Rs. "+ totalAmount);
+                        postsList.remove(post);
+                        cartAdapter.notifyDataSetChanged();
+                        if(postsList.size() == 0){
+                            discardCart();
+                        }
+
+                    }
+                }
+            });
+
+
+
+        }
+    }
+
+    @Override
+    public void RefreshSpinner() {
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }

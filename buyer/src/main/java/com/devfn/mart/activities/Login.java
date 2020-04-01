@@ -57,8 +57,8 @@ public class Login extends AppCompatActivity {
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(Login.this,MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
                 startActivity(intent);
                 finish();
             }
@@ -99,6 +99,7 @@ public class Login extends AppCompatActivity {
                 loginUser();
             }
         });
+
 
     }
 

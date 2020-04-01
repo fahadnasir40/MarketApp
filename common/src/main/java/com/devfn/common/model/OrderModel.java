@@ -2,31 +2,56 @@ package com.devfn.common.model;
 
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 
 public class OrderModel implements Serializable {
 
-    private int orderNo;
-    private List<PostItem> items;
+    private String orderNo;
+    private HashMap<String, PostItem> items;
     private String orderDate;
     private String orderName;
     private String deliveryAddress;
     private int totalOrderPrice;
     private String deliveryContact;
+    private String deliverUserId;
 
-    public int getOrderNo() {
+    private static OrderModel instance = null;
+
+
+
+    public void addItems(PostItem post){
+
+        items.put(post.getPostId(),post);
+        totalOrderPrice += post.getPrice();
+    }
+
+
+
+    public String getDeliverUserId() {
+        return deliverUserId;
+    }
+
+    public void setDeliverUserId(String deliverUserId) {
+        this.deliverUserId = deliverUserId;
+    }
+
+    public String getOrderNo() {
         return orderNo;
     }
 
-    public void setOrderNo(int orderNo) {
+    public OrderModel() {
+        items = new HashMap<String,PostItem>();
+    }
+
+    public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 
-    public List<PostItem> getItems() {
+    public HashMap<String, PostItem> getItems() {
         return items;
     }
 
-    public void setItems(List<PostItem> items) {
+    public void setItems(HashMap<String, PostItem> items) {
         this.items = items;
     }
 
@@ -70,9 +95,9 @@ public class OrderModel implements Serializable {
         this.deliveryContact = deliveryContact;
     }
 
-    public OrderModel(int orderNo, List<PostItem> items, String orderDate, String orderName, String deliveryAddress, int totalOrderPrice, String deliveryContact) {
+    public OrderModel(String orderNo, String orderDate, String orderName, String deliveryAddress, int totalOrderPrice, String deliveryContact) {
         this.orderNo = orderNo;
-        this.items = items;
+        this.items = new HashMap<String,PostItem>();
         this.orderDate = orderDate;
         this.orderName = orderName;
         this.deliveryAddress = deliveryAddress;

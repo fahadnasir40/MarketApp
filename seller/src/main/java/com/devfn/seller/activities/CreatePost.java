@@ -104,8 +104,9 @@ public class CreatePost extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 progressDialog.show();
+
                 createPost();
-             //   createPost();
+
             }
         });
 
@@ -150,9 +151,6 @@ public class CreatePost extends AppCompatActivity {
         if(imgUri != null){
 
 
-            StorageReference storageRef = storageReference.child(System.currentTimeMillis()+"." +
-                    getFileExtension(imgUri));
-
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imgUri));
 
             storageTask = fileReference.putFile(imgUri)
@@ -194,19 +192,16 @@ public class CreatePost extends AppCompatActivity {
         }
     }
 
-
-
-
-
-
     void createPostInDb(){
 
         databaseReference = FirebaseDatabase.getInstance().getReference("posts");
 
 
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        String formattedDate = df.format(c);
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time =&gt; "+c.getTime());
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
 
         String userId = FirebaseAuth.getInstance().getUid();
         String key = databaseReference.push().getKey();
