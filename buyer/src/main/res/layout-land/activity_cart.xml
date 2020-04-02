@@ -7,135 +7,172 @@
     android:fillViewport="true"
     android:layout_height="match_parent">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.Cart">
-
-    <androidx.appcompat.widget.Toolbar
-
-        android:id="@+id/cart_toolbar"
-
+    <RelativeLayout
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark">
+        android:layout_height="match_parent"
+        tools:context=".activities.Cart">
 
-        <RelativeLayout
+        <androidx.appcompat.widget.Toolbar
+
+            android:id="@+id/cart_toolbar"
+
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/toolbar_title_cart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cart"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="18sp"
+                    android:textFontWeight="200"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/btn_back_cart"/>
+
+
+                <Button
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/btn_back_cart"
+                    android:padding="32dp"
+                    android:background="@drawable/ic_arrow_back_black_24dp"
+                    />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+
+            android:id="@+id/ll_item_not_found"
+            android:layout_width="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_below="@id/cart_toolbar"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+
+                android:id="@+id/img_cart"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="32dp"
+                android:background="@drawable/shopping_cart"
+
+                />
             <TextView
-                android:id="@+id/toolbar_title_cart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cart"
-                android:textColor="@color/white"
-                android:textStyle="bold"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
+                android:text="Your cart is empty"
+                android:textSize="22sp"
                 android:fontFamily="@font/roboto"
-                android:textSize="18sp"
-                android:textFontWeight="200"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/btn_back_cart"/>
-
-
-            <Button
-
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentStart="true"
-                android:id="@+id/btn_back_cart"
-                android:padding="32dp"
-                android:background="@drawable/ic_arrow_back_black_24dp"
+                android:textColor="@color/black"
                 />
 
-        </RelativeLayout>
-
-    </androidx.appcompat.widget.Toolbar>
+        </LinearLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_cart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/cart_toolbar"
-        android:layout_margin="4dp"
-        android:layout_marginTop="24dp"
-        />
 
 
-    <LinearLayout
-        android:id="@+id/Ll_cart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/rv_cart"
-        android:visibility="gone"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-
-            android:fontFamily="@font/roboto"
-            android:text="TOTAL"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-
-        <TextView
-            android:id="@+id/item_cart_total_price"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_cart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/cart_toolbar"
+            android:layout_margin="8dp"
+            android:layout_marginTop="24dp"
+            />
 
 
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/Ll_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rv_cart"
+            android:visibility="gone"
+            >
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+
+                android:fontFamily="@font/roboto"
+                android:text="TOTAL"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/item_cart_total_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+
+                android:layout_gravity="center"
+
+                android:layout_margin="16dp"
+                android:fontFamily="@font/roboto"
+                android:gravity="right"
+                android:text="Rs. 850"
+                android:textColor="@color/colorPrimary"
+                android:textFontWeight="100"
+                android:textSize="18sp"
+
+                android:textStyle="bold"
+
+
+                />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_btn_discard_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/discard_all"
+            android:layout_below="@id/Ll_cart"
+            android:textColor="@color/skyBlueColor"
+            android:textStyle="bold"
+            android:textSize="14sp"
             android:layout_margin="16dp"
             android:fontFamily="@font/roboto"
-            android:gravity="right"
-            android:text="Rs. 850"
-            android:textColor="@color/colorPrimary"
-            android:textFontWeight="100"
-            android:textSize="18sp"
-
-            android:textStyle="bold"
-
+            android:visibility="gone"
 
             />
-    </LinearLayout>
+
+        <Button
+
+            android:id="@+id/cart_checkout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_btn_discard_cart"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/shape"
+            android:layout_margin="16dp"
+            android:drawableStart="@drawable/ic_shopping_cart_black_24dp"
+
+            android:padding="8dp"
+            android:text="     Checkout "
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone"/>
 
 
-    <TextView
-        android:id="@+id/tv_btn_discard_cart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/discard_all"
-        android:layout_below="@id/Ll_cart"
-        android:textColor="@color/skyBlueColor"
-        android:textStyle=""
-        android:layout_margin="16dp"
-        android:fontFamily="@font/roboto"
+    </RelativeLayout>
 
-        />
-    <Button
-
-        android:id="@+id/cart_checkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Ll_cart"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/shape"
-        android:layout_margin="16dp"
-        android:drawableStart="@drawable/ic_shopping_cart_black_24dp"
-
-        android:padding="8dp"
-        android:text="     Checkout "
-        android:textColor="@color/white"
-        android:textSize="12sp" />
-
-
-</RelativeLayout>
 
 
 </ScrollView>

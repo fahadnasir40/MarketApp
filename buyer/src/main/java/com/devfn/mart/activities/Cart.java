@@ -1,6 +1,7 @@
 package com.devfn.mart.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,22 +28,24 @@ import com.devfn.common.model.PostItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class Cart extends AppCompatActivity implements CartItemInterface,AdapterView.OnItemSelectedListener{
+public class Cart extends AppCompatActivity implements CartItemInterface {
 
     private List<PostItem> postsList;
-    private Button backButton,checkoutButton;
-    private  TextView totalPrice,discardAll;
+    private Button backButton, checkoutButton;
+    private TextView totalPrice, discardAll;
     private ProgressDialog progressDialog;
     private OrderModel orderModel;
     private int totalAmount = 0;
@@ -70,7 +73,7 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        cartAdapter = new CartAdapter(postsList,this);
+        cartAdapter = new CartAdapter(postsList, this);
         recyclerView.setAdapter(cartAdapter);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cart");
@@ -83,19 +86,19 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Cart.this,MainActivity.class);
+                Intent intent = new Intent(Cart.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }
         });
 
-        totalPrice.setText("Rs. "+ totalAmount);
+        totalPrice.setText("Rs. " + totalAmount);
 
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent  = new Intent(Cart.this,Checkout.class);
+                Intent intent = new Intent(Cart.this, Checkout.class);
                 startActivity(intent);
 
             }
@@ -115,13 +118,11 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
     }
 
 
-    private final Handler mHandler = new Handler()
-    {
+    private final Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
+        public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (progressDialog.isShowing()){
+            if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
                 emptyLayout();
 
@@ -129,7 +130,7 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
         }
     };
 
-    void readCartData(){
+    void readCartData() {
 
         progressDialog.setMessage("Loading Cart. Please wait.");
         postsList.clear();
@@ -137,42 +138,78 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
 
         mHandler.sendMessageDelayed(new Message(), 3000);
 
-        if(databaseReference != null){
-            databaseReference.child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    for(DataSnapshot ds:dataSnapshot.getChildren()){
-                        orderModel = ds.getValue(OrderModel.class);
-
-                        HashMap<String, PostItem> map = orderModel.getItems();
-
-                        Collection<PostItem> values = map.values();
-
-                        postsList.addAll(values);
-
-                        totalAmount = orderModel.getTotalOrderPrice();
-
-
-                        if(progressDialog.isShowing())
-                            progressDialog.dismiss();
-
-                        if(layoutGone && orderModel!=null)
-                            showLayout();
-                    }
-
-                    totalPrice.setText("Rs. "+ totalAmount);
-                    cartAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(Cart.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (databaseReference != null) {
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).addChildEventListener(childEventListener);
         }
 
     }
+
+    private  ChildEventListener childEventListener = new ChildEventListener() {
+
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+            orderModel = dataSnapshot.getValue(OrderModel.class);
+
+            HashMap<String, PostItem> map = orderModel.getItems();
+
+            Collection<PostItem> values = map.values();
+
+            postsList.addAll(values);
+
+            totalAmount = orderModel.getTotalOrderPrice();
+
+            if (progressDialog.isShowing())
+                progressDialog.dismiss();
+
+            if (layoutGone && orderModel != null)
+                showLayout();
+
+            setTotalPrice();
+            cartAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            postsList.clear();
+            orderModel = dataSnapshot.getValue(OrderModel.class);
+
+            HashMap<String, PostItem> map = orderModel.getItems();
+
+            Collection<PostItem> values = map.values();
+
+
+            postsList.addAll(values);
+
+            totalAmount = 0;
+            for(int i =0;i<postsList.size();i++){
+                totalAmount += (postsList.get(i).getPrice() * postsList.get(i).getQuantityOrdered());
+            }
+
+            cartAdapter.notifyDataSetChanged();
+
+            setTotalPrice();
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
 
 
     private void showDialog() {
@@ -207,15 +244,15 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
     }
 
 
-    void discardCart(){
+    void discardCart() {
 
-        if(databaseReference!=null)
+        if (databaseReference != null)
             databaseReference.child(FirebaseAuth.getInstance().getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
 
-                        if(postsList!=null){
+                        if (postsList != null) {
                             postsList.clear();
                             cartAdapter.notifyDataSetChanged();
                             emptyLayout();
@@ -225,9 +262,9 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
             });
     }
 
-    void emptyLayout(){
+    void emptyLayout() {
 
-        if(postsList.size() == 0){
+        if (postsList.size() == 0) {
 
 
             LinearLayout linearLayout = findViewById(R.id.Ll_cart);
@@ -243,9 +280,9 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
 
     }
 
-    void showLayout(){
+    void showLayout() {
 
-        if(postsList.size() != 0 && layoutGone){
+        if (postsList.size() != 0 && layoutGone) {
 
             LinearLayout linearLayout = findViewById(R.id.Ll_cart);
             linearLayout.setVisibility(View.VISIBLE);
@@ -263,44 +300,66 @@ public class Cart extends AppCompatActivity implements CartItemInterface,Adapter
     @Override
     public void RemoveItemFromCart(final PostItem post) {
 
-        if(orderModel!=null){
+        if (orderModel != null) {
 
             databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("items").child(post.getPostId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
 
-                        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("totalOrderPrice").setValue(totalAmount-post.getPrice());
-                        totalAmount-= post.getPrice();
+                        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("totalOrderPrice").setValue(totalAmount - post.getPrice());
+                        totalAmount -= (post.getPrice() * post.getQuantityOrdered());
 
-                        totalPrice.setText("Rs. "+ totalAmount);
+                        totalPrice.setText("Rs. " + totalAmount);
                         postsList.remove(post);
                         cartAdapter.notifyDataSetChanged();
-                        if(postsList.size() == 0){
+                        if (postsList.size() == 0) {
                             discardCart();
                         }
-
+                        setTotalPrice();
                     }
                 }
             });
-
-
-
         }
     }
 
     @Override
-    public void RefreshSpinner() {
+    public void RefreshTotal(PostItem postItem){
+
+        if(orderModel!=null){
+
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo())
+                    .child("items").child(postItem.getPostId()).child("quantityOrdered")
+                    .setValue(postItem.getQuantityOrdered()).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if(task.isSuccessful()){
+                        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("totalOrderPrice").setValue(totalAmount);
+                    }
+                }
+            });
+
+        }
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    String getFormattedNumber(int number){
+        NumberFormat myFormat = NumberFormat.getInstance();
+        myFormat.setGroupingUsed(true); // this will also round numbers, 3
+        return myFormat.format(number);
 
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+    void setTotalPrice(){
+        totalPrice.setText("Rs. "+ getFormattedNumber(totalAmount));
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        databaseReference.removeEventListener(childEventListener);
     }
 }

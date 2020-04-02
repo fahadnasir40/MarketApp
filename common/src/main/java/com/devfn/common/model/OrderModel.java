@@ -25,6 +25,11 @@ public class OrderModel implements Serializable {
         totalOrderPrice += post.getPrice();
     }
 
+    public boolean findPost(PostItem post){
+        if(items.containsKey(post.getPostId()))
+            return  true;
+        return false;
+    }
 
 
     public String getDeliverUserId() {

@@ -8,6 +8,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,6 +23,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +40,7 @@ public class Post extends AppCompatActivity {
 
     private ImageView image;
     private TextView name,description,price,deliveryTime,quantity;
-    private Button backButton,cartButton,addToCartButton;
+    private Button backButton,cartButton,addToCartButton,alreadyAddedCartButton;
     private PostItem post;
     private OrderModel cart;
     private ProgressDialog progressDialog;
@@ -65,6 +68,9 @@ public class Post extends AppCompatActivity {
         quantity = findViewById(R.id.post_quantity);
         description = findViewById(R.id.post_description);
         addToCartButton = findViewById(R.id.btn_addToCart);
+        alreadyAddedCartButton = findViewById(R.id.btn_item_added_to_cart);
+
+
 
         Picasso.with(this).load(post.getPhoto()).fit().centerCrop()
                 .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
@@ -117,70 +123,111 @@ public class Post extends AppCompatActivity {
         });
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cart");
+        readData();
 
     }
 
-    private void addItemToCart(){
-
+    void readData(){
 
         if(post != null && FirebaseAuth.getInstance().getUid() != null){
+
+            mHandler.sendMessageDelayed(new Message(), 500);
             progressDialog.show();
             final String userId = FirebaseAuth.getInstance().getUid();
 
             if(databaseReference != null){
-                databaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        if(dataSnapshot.hasChildren()){
-                            for(DataSnapshot ds:dataSnapshot.getChildren()){
-
-                                 cart = ds.getValue(OrderModel.class);
-
-                            }
-                        }
-                        else{
-                                cart = new OrderModel();
-                                String key = databaseReference.push().getKey();
-                                cart.setOrderNo(key);
-                                cart.setDeliverUserId(FirebaseAuth.getInstance().getUid());
-
-                        }
-
-                        progressDialog.dismiss();
-                        cart.addItems(post);
-                        insertInDB();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(Post.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
+                databaseReference.child(userId).addListenerForSingleValueEvent(valueEventListener);
             }
-
-
-
         }
     }
 
-    private void insertInDB(){
+    private void addItemToCart(){
 
-        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-                Toast.makeText(Post.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        if(post.getQuantity() > 0)
+        {
+            if(cart == null){
+                cart = new OrderModel();
+                String key = databaseReference.push().getKey();
+                cart.setOrderNo(key);
+                cart.setDeliverUserId(FirebaseAuth.getInstance().getUid());
             }
 
-        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
 
-                if(task.isSuccessful())
-                    Toast.makeText(Post.this,"Item added to cart",Toast.LENGTH_SHORT).show();
-            }});
+            post.setQuantityOrdered(1);
+
+            cart.addItems(post);
+
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(Post.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                }
+
+            }).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if(task.isSuccessful()){
+                        alreadyAddedCartButton.setVisibility(View.VISIBLE);
+                        addToCartButton.setVisibility(View.GONE);
+                        progressDialog.dismiss();
+                    }
+                }});
+        }
+        else{
+            Toast.makeText(Post.this,"No Item Available",Toast.LENGTH_SHORT).show();
+        }
+
     }
+
+    private final Handler mHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            super.handleMessage(msg);
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+
+                if(cart == null){
+                    if(progressDialog.isShowing())
+                        progressDialog.dismiss();
+                }
+
+            }
+        }
+    };
+
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if(dataSnapshot.hasChildren()){
+                for(DataSnapshot ds:dataSnapshot.getChildren()){
+                    cart = ds.getValue(OrderModel.class);
+                }
+
+                if(cart != null){
+                    if(cart.findPost(post)){
+                        alreadyAddedCartButton.setVisibility(View.VISIBLE);
+                        addToCartButton.setVisibility(View.GONE);
+                    }
+                }
+
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            Toast.makeText(Post.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    };
+
 
     private void showDialog() {
 
@@ -215,6 +262,9 @@ public class Post extends AppCompatActivity {
         alert.show();
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(valueEventListener);
+    }
 }

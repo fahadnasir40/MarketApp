@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("posts");
 
 
-
         readAllPosts();
     }
 

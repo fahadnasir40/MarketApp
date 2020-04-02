@@ -56,8 +56,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull final PostViewHolder holder, final int position) {
 
-        NumberFormat myFormat = NumberFormat.getInstance();
-        myFormat.setGroupingUsed(true); // this will also round numbers, 3
+
 
 
         Picasso.with(mContext).load(PostItems.get(position).getPhoto()).fit().centerCrop()
@@ -69,31 +68,52 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
         holder.quantity.setText("Quantity: " );
 
 
+
+
         int size = PostItems.get(position).getQuantity();
         List<String> quantity = new ArrayList<>(size);
         for(int i = 0;i<size;i++){
             quantity.add(String.valueOf(i+1));
         }
 
-        // Creating adapter for spinner
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, quantity);
-
-        // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // attaching data adapter to spinner
         holder.spinnerItems.setAdapter(dataAdapter);
+
+        //Reset quantity to 1 if items quantity is greater than available items
+        if(PostItems.get(position).getQuantityOrdered() > PostItems.get(position).getQuantity()){
+
+            if(PostItems.get(position).getQuantity() > 0){
+                PostItems.get(position).setQuantity(1);
+                cartItem.RefreshTotal(PostItems.get(position));
+
+            }
+            else {
+                cartItem.RemoveItemFromCart(PostItems.get(position));
+                Toast.makeText(mContext,PostItems.get(position).getName() +" item no longer available",Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+
+            holder.spinnerItems.setSelection(PostItems.get(position).getQuantityOrdered() - 1);
+
+        }
 
 
         holder.spinnerItems.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    Integer totalQuantity = 1;
+                    Integer totalQuantity ;
+                    NumberFormat myFormat = NumberFormat.getInstance();
+                    myFormat.setGroupingUsed(true); // this will also round numbers, 3
 
                     totalQuantity = Integer.valueOf(adapterView.getItemAtPosition(i).toString());
-                    holder.price.setText("Rs. "+ PostItems.get(position).getPrice() * totalQuantity);
+                    holder.price.setText("Rs. "+ myFormat.format(PostItems.get(position).getPrice() * totalQuantity));
 
                     PostItems.get(position).setQuantityOrdered(totalQuantity);
+                    cartItem.RefreshTotal(PostItems.get(position));
+
                     totalSum.add(position,PostItems.get(position).getPrice() * totalQuantity);
 
             }
@@ -106,10 +126,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
 
 
 
-
         holder.deliveryTime.setText("Expected Delivery Time: " + PostItems.get(position).getDeliveryTime() +" days");
-
-
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,7 +134,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
 
             }
         });
-
 
         holder.setItemClickListener(new ItemClickListener() {
 
@@ -133,6 +149,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
             }
         });
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -165,12 +183,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
 
 
             itemView.setOnClickListener(this);
-
-
-
         }
-
-
 
 
         public void onClick(View view) {
