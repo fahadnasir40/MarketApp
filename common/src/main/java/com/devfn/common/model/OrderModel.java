@@ -1,13 +1,16 @@
 package com.devfn.common.model;
 
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
 public class OrderModel implements Serializable {
 
+
     private String orderNo;
-    private HashMap<String, PostItem> items;
+    private HashMap<String, CartItem> items;
     private String orderDate;
     private String orderName;
     private String deliveryAddress;
@@ -15,14 +18,21 @@ public class OrderModel implements Serializable {
     private String deliveryContact;
     private String deliverUserId;
 
-    private static OrderModel instance = null;
+
+    public int getQuantityOrdered(PostItem postItem){
+
+        if(items.containsKey(postItem.getPostId())){
+            return items.get(postItem.getPostId()).getQuantityOrdered();
+        }
+        return 0;
+    }
 
 
 
-    public void addItems(PostItem post){
+    public void addItems(CartItem post){
 
         items.put(post.getPostId(),post);
-        totalOrderPrice += post.getPrice();
+    //    totalOrderPrice += post.getPrice();
     }
 
     public boolean findPost(PostItem post){
@@ -45,18 +55,18 @@ public class OrderModel implements Serializable {
     }
 
     public OrderModel() {
-        items = new HashMap<String,PostItem>();
+        items = new HashMap<String,CartItem>();
     }
 
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 
-    public HashMap<String, PostItem> getItems() {
+    public HashMap<String, CartItem> getItems() {
         return items;
     }
 
-    public void setItems(HashMap<String, PostItem> items) {
+    public void setItems(HashMap<String, CartItem> items) {
         this.items = items;
     }
 
@@ -102,7 +112,7 @@ public class OrderModel implements Serializable {
 
     public OrderModel(String orderNo, String orderDate, String orderName, String deliveryAddress, int totalOrderPrice, String deliveryContact) {
         this.orderNo = orderNo;
-        this.items = new HashMap<String,PostItem>();
+        this.items = new HashMap<String,CartItem>();
         this.orderDate = orderDate;
         this.orderName = orderName;
         this.deliveryAddress = deliveryAddress;

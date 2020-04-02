@@ -1,0 +1,7 @@
+<resources>
+    <string name="contact_no">Contact No</string>
+    <string name="delivery_addres">Delivery Address</string>
+    <string name="delivery_postal_code">Postal Code</string>
+    <string name="delivery_city">City</string>
+    <string name="payment_method">Payment Method: Cash on delivery</string>
+</resources>

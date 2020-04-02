@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.devfn.mart">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ResetPassword"/>
+        <activity android:name=".activities.DeliveryDetails"></activity>
+        <activity android:name=".activities.ResetPassword" />
         <activity android:name=".activities.Register" />
         <activity android:name=".activities.Order" />
         <activity android:name=".activities.Checkout" />

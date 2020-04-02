@@ -30,6 +30,7 @@ public class Register extends AppCompatActivity {
 
 
     private FirebaseAuth firebaseAuth;
+    private User user;
 
     ProgressBar progressBar;
 
@@ -192,7 +193,7 @@ public class Register extends AppCompatActivity {
         firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                progressBar.setVisibility(View.GONE);
+
                 if (task.isSuccessful()) {
 
                     firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -201,11 +202,7 @@ public class Register extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()) {
 
-
-
-                                registerUerToDatabase();
-                                login(email.getText().toString(),password.getText().toString());
-
+                                 registerUerToDatabase();
 
                             }
                             else {
@@ -227,9 +224,23 @@ public class Register extends AppCompatActivity {
                 new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Intent intent = new Intent(Register.this, MainActivity.class);
-                        finish();
-                        startActivity(intent);
+                        progressBar.setVisibility(View.GONE);
+                        if(user != null){
+
+                            Bundle bundle = new Bundle();
+
+                            String callObject = "call_from_register_account";
+                            bundle.putSerializable("call_user_object",user);
+                            bundle.putSerializable("call_intent",callObject);
+
+                            Intent intent = new Intent(Register.this, DeliveryDetails.class);
+                            intent.putExtras(bundle);
+
+                            startActivity(intent);
+
+
+                        }
+
                     }
                 }).addOnFailureListener(this, new OnFailureListener() {
             @Override
@@ -248,10 +259,24 @@ public class Register extends AppCompatActivity {
         firebaseAuth.getCurrentUser().reload();
         String Name = name.getText().toString();
 
-        User user = new User(firebaseAuth.getCurrentUser().getUid(),firebaseAuth.getCurrentUser().getEmail(),Name);
-        mDatabase.child("users").child(FirebaseAuth.getInstance().getUid()).setValue(user);
+        user = new User();
+
+        user.setFullName(Name);
+        user.setEmail(firebaseAuth.getCurrentUser().getEmail());
+        user.setUserId(firebaseAuth.getCurrentUser().getUid());
+
 
         mDatabase.child("roles").child("buyers").child(FirebaseAuth.getInstance().getUid()).setValue(FirebaseAuth.getInstance().getUid());
+        mDatabase.child("users").child(FirebaseAuth.getInstance().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    login(email.getText().toString(),password.getText().toString());
+                }
+            }
+        });
 
     }
+
+
 }

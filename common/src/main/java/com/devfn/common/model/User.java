@@ -1,8 +1,23 @@
 package com.devfn.common.model;
 
-public class User {
+import java.io.Serializable;
 
-    String FullName,email,userId;
+public class User implements Serializable {
+
+    String FullName,email,userId,contactNo,address,postalCode,city;
+
+    public User() {
+    }
+
+    public User(String fullName, String email, String userId, String contactNo, String address, String postalCode, String city) {
+        FullName = fullName;
+        this.email = email;
+        this.userId = userId;
+        this.contactNo = contactNo;
+        this.address = address;
+        this.postalCode = postalCode;
+        this.city = city;
+    }
 
     public String getFullName() {
         return FullName;
@@ -28,9 +43,35 @@ public class User {
         this.userId = userId;
     }
 
-    public User(String userId, String fullName, String email) {
-        FullName = fullName;
-        this.email = email;
-        this.userId = userId;
+    public String getContactNo() {
+        return contactNo;
+    }
+
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

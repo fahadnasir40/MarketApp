@@ -115,7 +115,7 @@ public class Login extends AppCompatActivity {
             if(password.getText().toString().equals(""))passwordLayout.setError("You need to enter password");
             progressBar.setVisibility(View.GONE);
 
-            //Toast.makeText(getApplicationContext(), "Login Failed", Toast.LENGTH_SHORT).show();
+
         }
     }
 

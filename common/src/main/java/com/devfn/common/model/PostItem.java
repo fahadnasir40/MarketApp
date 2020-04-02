@@ -6,16 +6,10 @@ public class PostItem implements Serializable {
 
     private String postId;
     private String photo;
-    private int quantity,price,quantityOrdered;
+    private int quantity,price;
     private String name,description,deliveryTime,datePosted,authorId;
 
-    public int getQuantityOrdered() {
-        return quantityOrdered;
-    }
 
-    public void setQuantityOrdered(int quantityOrdered) {
-        this.quantityOrdered = quantityOrdered;
-    }
 
     public String getDeliveryTime() {
         return deliveryTime;

@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.devfn.common.model.CartItem;
 import com.devfn.common.model.CartItemInterface;
 import com.devfn.mart.R;
 import com.devfn.mart.activities.Post;
@@ -37,10 +38,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
     private Context        mContext;
     private CartItemInterface cartItem;
     private List<Integer> totalSum;
+    private List<CartItem> cartItemList;
 
-    public CartAdapter(List<PostItem> PostItems, Context mContext) {
+    public CartAdapter(List<PostItem> PostItems, List<CartItem> cartItemList, Context mContext) {
         this.PostItems   = PostItems;
         this.mContext     = mContext;
+        this.cartItemList = cartItemList;
+
         this.cartItem = (CartItemInterface)mContext;
         this.totalSum = new ArrayList<>(Collections.nCopies(PostItems.size(), 0));
     }
@@ -82,7 +86,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
         holder.spinnerItems.setAdapter(dataAdapter);
 
         //Reset quantity to 1 if items quantity is greater than available items
-        if(PostItems.get(position).getQuantityOrdered() > PostItems.get(position).getQuantity()){
+        if(cartItemList.get(position).getQuantityOrderedByPost(PostItems.get(position).getPostId()) > PostItems.get(position).getQuantity()){
 
             if(PostItems.get(position).getQuantity() > 0){
                 PostItems.get(position).setQuantity(1);
@@ -96,7 +100,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
         }
         else{
 
-            holder.spinnerItems.setSelection(PostItems.get(position).getQuantityOrdered() - 1);
+            holder.spinnerItems.setSelection(cartItemList.get(position).getQuantityOrderedByPost(PostItems.get(position).getPostId()) - 1);
 
         }
 
@@ -111,7 +115,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
                     totalQuantity = Integer.valueOf(adapterView.getItemAtPosition(i).toString());
                     holder.price.setText("Rs. "+ myFormat.format(PostItems.get(position).getPrice() * totalQuantity));
 
-                    PostItems.get(position).setQuantityOrdered(totalQuantity);
+                    cartItemList.get(position).setQuantityOrdered(totalQuantity);
                     cartItem.RefreshTotal(PostItems.get(position));
 
                     totalSum.add(position,PostItems.get(position).getPrice() * totalQuantity);

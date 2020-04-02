@@ -1,14 +1,17 @@
 package com.devfn.common.model;
 
-public class CartItem {
+import java.io.Serializable;
+
+public class CartItem implements Serializable {
 
     private String postId;
-    private Integer quantityOrdered;
+    private int quantityOrdered;
 
     public CartItem() {
+        quantityOrdered = 0;
     }
 
-    public CartItem(String postId, Integer quantityOrdered) {
+    public CartItem(String postId, int quantityOrdered) {
         this.postId = postId;
         this.quantityOrdered = quantityOrdered;
     }
@@ -21,11 +24,17 @@ public class CartItem {
         this.postId = postId;
     }
 
-    public Integer getQuantityOrdered() {
+    public int getQuantityOrderedByPost(String postId){
+        if(this.postId.equals(postId))
+            return quantityOrdered;
+        return 0;
+    }
+
+    public int getQuantityOrdered() {
         return quantityOrdered;
     }
 
-    public void setQuantityOrdered(Integer quantityOrdered) {
+    public void setQuantityOrdered(int quantityOrdered) {
         this.quantityOrdered = quantityOrdered;
     }
 }

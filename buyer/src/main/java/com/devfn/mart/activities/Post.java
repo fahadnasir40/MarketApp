@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devfn.common.model.CartItem;
 import com.devfn.common.model.OrderModel;
 import com.devfn.mart.R;
 import com.devfn.common.model.PostItem;
@@ -106,6 +107,7 @@ public class Post extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Post.this,Cart.class);
+                finish();
                 startActivity(intent);
             }
         });
@@ -153,9 +155,10 @@ public class Post extends AppCompatActivity {
             }
 
 
-            post.setQuantityOrdered(1);
+            CartItem cartItem = new CartItem(post.getPostId(),1);
+            cart.addItems(cartItem);
+            cart.setTotalOrderPrice(cart.getTotalOrderPrice() + post.getPrice());
 
-            cart.addItems(post);
 
             databaseReference.child(FirebaseAuth.getInstance().getUid()).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
                 @Override
