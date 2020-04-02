@@ -139,7 +139,9 @@ public class Checkout extends AppCompatActivity {
         if(newOrderNumber != -1){
             String orderNo = orderModel.getOrderNo();
             orderModel.setOrderNo("M-LHR-"+String.valueOf(newOrderNumber));
-            ordersReference.child(orderNo).setValue(orderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+            databaseReference.child("orders").child(orderNo).setValue(orderNo);
+            ordersReference.child(FirebaseAuth.getInstance().getUid()).child(orderNo).setValue(orderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful())
