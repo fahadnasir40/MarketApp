@@ -1,0 +1,181 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="4dp"
+    android:elevation="2dp">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+    <TextView
+        android:id="@+id/order_tv_order_no"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order Number  "
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_margin="8dp"
+        android:fontFamily="@font/roboto"
+        />
+
+
+    <TextView
+        android:id="@+id/order_tv_order_date"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Placed on 22 Apr 2020 12:03:22"
+        android:textSize="11sp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/roboto"
+        android:layout_below="@id/order_tv_order_no"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/order_item_price"
+        android:layout_alignParentEnd="true"
+        android:text="Rs. 850"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:textFontWeight="100"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_order_status_title"
+        android:text="Status: "
+        android:textColor="@color/black"
+        android:textSize="12sp"
+
+        android:layout_margin="8dp"
+        android:textFontWeight="100"
+        android:textStyle="bold"
+        android:layout_below="@id/order_tv_order_date"
+        android:fontFamily="@font/roboto"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_order_status"
+        android:layout_below="@id/order_tv_order_date"
+        android:layout_toEndOf="@id/item_order_status_title"
+
+        android:text="Pending"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:textFontWeight="100"
+        android:textStyle="italic"
+        android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_show_details"
+            android:layout_below="@id/order_tv_order_date"
+            android:layout_alignParentEnd="true"
+
+            android:text="Show details "
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:textFontWeight="600"
+
+            android:fontFamily="@font/roboto"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+
+
+
+        <!--        <ImageView-->
+<!--            android:id="@+id/item_cart_img"-->
+<!--            android:layout_width="120px"-->
+<!--            android:layout_height="120px"-->
+
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_marginEnd="4dp"-->
+<!--            android:layout_marginBottom="8dp"-->
+<!--            android:layout_below="@id/orders_bar_1"-->
+<!--            -->
+<!--            android:padding="8dp" />-->
+<!--        -->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/item_cart_name"-->
+<!--            android:layout_below="@+id/orders_bar_1"-->
+<!--            android:text="Redmi Note 8 "-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="12sp"-->
+<!--            android:layout_marginStart="2dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_marginBottom="2dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:fontFamily="@font/roboto"-->
+<!--            android:layout_toEndOf="@id/item_cart_img"-->
+
+<!--            />-->
+
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/item_cart_quantity"-->
+<!--            android:text="Quantity: "-->
+<!--            android:textSize="14sp"-->
+<!--            android:layout_margin="4dp"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:fontFamily="@font/roboto"-->
+<!--            android:layout_below="@id/item_cart_name"-->
+<!--            android:layout_toEndOf="@id/item_cart_img" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/item_cart_delivery_time"-->
+<!--            android:text="Expected Delivery Time: 7 days"-->
+<!--            android:textSize="14sp"-->
+<!--            android:layout_margin="4dp"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:fontFamily="@font/roboto"-->
+<!--            android:layout_below="@id/item_cart_quantity"-->
+<!--            android:layout_toEndOf="@id/item_cart_img" />-->
+
+<!--        <View-->
+<!--            android:id="@+id/orders_bar_1"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:background="@color/LightGrey"-->
+
+<!--            android:layout_below="@id/order_tv_order_date"-->
+
+<!--            android:layout_marginTop="12dp"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:layout_marginBottom="2dp"-->
+<!--            />-->
+
+
+

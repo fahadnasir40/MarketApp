@@ -1,9 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.Order">
+    android:fillViewport="true"
+    android:layout_height="match_parent">
 
-</RelativeLayout>
+    <RelativeLayout
+        android:background="@color/WhiteSmoke"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.Order">
+
+        <androidx.appcompat.widget.Toolbar
+
+            android:id="@+id/orders_toolbar"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/toolbar_title_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Orders History"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="18sp"
+                    android:textFontWeight="200"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/btn_back_orders"/>
+
+
+                <Button
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/btn_back_orders"
+                    android:padding="32dp"
+                    android:background="@drawable/ic_arrow_back_black_24dp"
+                    />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/orders_tv_no_orders_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Orders Found"
+            android:layout_below="@id/rv_orders"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp"
+            android:layout_margin="32dp"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:fontFamily="@font/roboto"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_orders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orders_toolbar"
+            android:layout_margin="4dp"
+            android:layout_marginTop="24dp"
+            />
+
+
+    </RelativeLayout>
+
+
+
+</ScrollView>

@@ -12,20 +12,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.DeliveryDetails"></activity>
-        <activity android:name=".activities.ResetPassword" />
-        <activity android:name=".activities.Register" />
-        <activity android:name=".activities.Order" />
-        <activity android:name=".activities.Checkout" />
-        <activity android:name=".activities.Cart" />
-        <activity android:name=".activities.Post" />
-        <activity android:name=".activities.Login">
+
+        <activity android:name=".activities.OrderDetails"></activity>
+        <activity android:name=".activities.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.DeliveryDetails" />
+        <activity android:name=".activities.ResetPassword" />
+        <activity android:name=".activities.Register" />
+        <activity android:name=".activities.Order" />
+        <activity android:name=".activities.Checkout" />
+        <activity android:name=".activities.Cart" />
+        <activity android:name=".activities.Post" />
+        <activity android:name=".activities.Login" />
         <activity android:name=".activities.MainActivity" />
     </application>
 

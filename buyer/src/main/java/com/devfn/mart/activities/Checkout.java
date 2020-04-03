@@ -12,8 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devfn.common.model.CartItem;
 import com.devfn.common.model.CartItemInterface;
 import com.devfn.common.model.OrderModel;
+import com.devfn.common.model.PostItem;
 import com.devfn.common.model.User;
 import com.devfn.mart.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,16 +30,19 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Random;
 
 public class Checkout extends AppCompatActivity {
+
+    //TODO Remove total quantity from posts
 
     private Button confirmOrder,backButton;
     private OrderModel orderModel;
     private TextView orderNo,orderDate,totalPrice;
     private TextView name,address,contactNumber,changeDeliveryDetailsButton;
 
-    private DatabaseReference databaseReference,ordersReference,cartReference;
+    private DatabaseReference databaseReference,ordersReference,cartReference,postReference,postWriteReference;
     private User currentUser;
     private ProgressDialog progressDialog,orderProgressDialog;
     private int newOrderNumber = -1;
@@ -101,6 +106,7 @@ public class Checkout extends AppCompatActivity {
             String formattedDate = df.format(c.getTime());
             orderDate.setText("Order Date: "+formattedDate);
 
+
         }
 
 
@@ -108,17 +114,7 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(currentUser!=null){
-                    Bundle bundle2 = new Bundle();
-
-                    bundle2.putSerializable("call_object","Call From Checkout");
-                    bundle2.putSerializable("order_object",orderModel);
-                    bundle2.putSerializable("call_user_object",currentUser);
-
-                    Intent intent1 = new Intent(Checkout.this,DeliveryDetails.class);
-                    intent1.putExtras(bundle2);
-                    startActivity(intent1);
-                }
+              startDeliveryActivity();
 
             }
         });
@@ -126,6 +122,9 @@ public class Checkout extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
         ordersReference = FirebaseDatabase.getInstance().getReference("orders");
         cartReference = FirebaseDatabase.getInstance().getReference("cart");
+        postReference = FirebaseDatabase.getInstance().getReference("posts");
+        postWriteReference = FirebaseDatabase.getInstance().getReference("posts");
+
 
         progressDialog.setMessage("Loading Delivery Details.");
         progressDialog.show();
@@ -133,22 +132,77 @@ public class Checkout extends AppCompatActivity {
         loadDeliveryDetails();
     }
 
+    void startDeliveryActivity(){
+        if(currentUser!=null){
+            Bundle bundle2 = new Bundle();
 
+            bundle2.putSerializable("call_object","Call From Checkout");
+            bundle2.putSerializable("order_object",orderModel);
+            bundle2.putSerializable("call_user_object",currentUser);
+
+            Intent intent1 = new Intent(Checkout.this,DeliveryDetails.class);
+            intent1.putExtras(bundle2);
+            startActivity(intent1);
+        }
+    }
 
     void writeOrderInDb(){
         if(newOrderNumber != -1){
-            String orderNo = orderModel.getOrderNo();
-            orderModel.setOrderNo("M-LHR-"+String.valueOf(newOrderNumber));
 
-            databaseReference.child("orders").child(orderNo).setValue(orderNo);
-            ordersReference.child(FirebaseAuth.getInstance().getUid()).child(orderNo).setValue(orderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful())
-                        discardCart();
+            if(currentUser.getPostalCode() == null && currentUser.getAddress() == null
+                    && currentUser.getPostalCode() == null && currentUser.getCity() == null){
+
+                startDeliveryActivity();
+
+                Toast.makeText(Checkout.this,"Delivery Details not found",Toast.LENGTH_SHORT).show();
+            }
+            else{
+
+                orderModel.setDeliveryAddress(currentUser.getAddress());
+                orderModel.setDeliveryCity(currentUser.getCity());
+                orderModel.setDeliveryPostalCode(currentUser.getPostalCode());
+                orderModel.setDeliveryContact(currentUser.getContactNo());
+
+
+                String orderNo = orderModel.getOrderNo();
+                orderModel.setOrderId(orderNo);
+                orderModel.setOrderNo("M-LHR-"+String.valueOf(newOrderNumber));
+
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+                String formattedDate = df.format(c.getTime());
+
+                orderModel.setOrderDate(formattedDate);
+                orderModel.setOrderStatus("Pending");
+                Collection<CartItem> cartItems = orderModel.getItems().values();
+
+                for(final CartItem item:cartItems){
+
+                    postReference.child(item.getPostId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            PostItem postItem = dataSnapshot.getValue(PostItem.class);
+                            postItem.setQuantity(postItem.getQuantity() - item.getQuantityOrdered());
+                            postWriteReference.child(postItem.getPostId()).setValue(postItem);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-            });
 
+                databaseReference.child(FirebaseAuth.getInstance().getUid()).child("orders").child(orderNo).setValue(orderNo);
+                ordersReference.child(FirebaseAuth.getInstance().getUid()).child(orderNo).setValue(orderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful())
+                            discardCart();
+                    }
+                });
+
+
+            }
         }
 
     }
@@ -200,9 +254,9 @@ public class Checkout extends AppCompatActivity {
                             orderProgressDialog.dismiss();
 
                         Intent intent = new Intent(Checkout.this,MainActivity.class);
-
-                        finish();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
                         startActivity(intent);
+                        finish();
 
                         Toast.makeText(getApplicationContext(),"Your order has been placed",Toast.LENGTH_LONG).show();
 
@@ -211,4 +265,11 @@ public class Checkout extends AppCompatActivity {
             });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
+    }
 }

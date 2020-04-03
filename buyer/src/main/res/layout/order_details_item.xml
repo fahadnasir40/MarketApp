@@ -1,0 +1,90 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/white"
+    android:layout_margin="2dp">
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
+
+        <ImageView
+            android:id="@+id/item_details_img"
+            android:layout_width="200px"
+            android:layout_height="200px"
+
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_details_name"
+            android:text="Sample Item "
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/roboto"
+            android:layout_toEndOf="@id/item_details_img"
+
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_details_price"
+            android:layout_alignParentEnd="true"
+            android:text="Rs. 850"
+
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="4dp"
+            android:textFontWeight="100"
+            android:textStyle="bold"
+            android:fontFamily="@font/roboto"
+            android:layout_below="@id/item_details_name"
+
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_details_quantity"
+            android:text="Quantity: "
+            android:textSize="14sp"
+            android:layout_margin="4dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto"
+            android:layout_below="@id/item_details_name"
+            android:layout_toEndOf="@id/item_details_img" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_details_delivery_time"
+            android:text="Expected Delivery Time: 7 days"
+            android:textSize="14sp"
+            android:layout_margin="4dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto"
+            android:layout_below="@id/item_details_quantity"
+            android:layout_toEndOf="@id/item_details_img" />
+
+
+
+    </RelativeLayout>
+
+  </androidx.cardview.widget.CardView>

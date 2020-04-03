@@ -37,6 +37,17 @@
             android:titleTextColor="@color/white"
             android:layout_alignParentTop="true"
             >
+            <TextView
+                android:id="@+id/toolbar_title_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto"
+                android:textSize="18sp"
+                android:textFontWeight="200"
+                android:layout_marginStart="16dp"/>
 
             <Button
                 android:id="@+id/btn_skip"
@@ -57,18 +68,18 @@
 
 
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/loginToolbar"
             android:id="@+id/login_logo"
             android:layout_centerInParent="true"
-            android:text="Market Application"
+            android:src="@drawable/ic_launcher_foreground"
             android:textSize="24sp"
             android:fontFamily="@font/roboto"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:layout_margin="32dp"
+            android:layout_margin="8dp"
             />
 
 

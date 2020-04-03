@@ -22,6 +22,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -34,10 +36,10 @@ public class Register extends AppCompatActivity {
 
     ProgressBar progressBar;
 
-    TextInputLayout nameLayout;// = findViewById(R.id.textInputLayoutConfirmPassword);
-    TextInputLayout emailLayout;// = findViewById(R.id.textInputLayoutEmail);
-    TextInputLayout passwordLayout;// = findViewById(R.id.textInputLayoutPassword);
-    TextInputLayout confirmPasswordLayout;// = findViewById(R.id.textInputLayoutConfirmPassword);
+    TextInputLayout nameLayout;
+    TextInputLayout emailLayout;
+    TextInputLayout passwordLayout;
+    TextInputLayout confirmPasswordLayout;
 
     TextInputEditText name;
     TextInputEditText email;
@@ -194,31 +196,18 @@ public class Register extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
-                if (task.isSuccessful()) {
-
-                    firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-
-                                 registerUerToDatabase();
-
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }else
+                if (task.isSuccessful()) { registerUerToDatabase(); }else
                 {
+                    if(progressBar.getVisibility() == View.VISIBLE)
+                        progressBar.setVisibility(View.GONE);
+
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    void login(String userName,String password){
+    void loginUser(String userName,String password){
 
         firebaseAuth.signInWithEmailAndPassword(userName,password).addOnCompleteListener(this,
                 new OnCompleteListener<AuthResult>() {
@@ -227,20 +216,37 @@ public class Register extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         if(user != null){
 
-                            Bundle bundle = new Bundle();
+                            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                            String callObject = "call_from_register_account";
-                            bundle.putSerializable("call_user_object",user);
-                            bundle.putSerializable("call_intent",callObject);
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name.getText().toString()).build();
+                            firebaseUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()) {
+                                                    Bundle bundle = new Bundle();
+                                                    String callObject = "call_from_register_account";
+                                                    bundle.putSerializable("call_user_object",user);
+                                                    bundle.putSerializable("call_intent",callObject);
 
-                            Intent intent = new Intent(Register.this, DeliveryDetails.class);
-                            intent.putExtras(bundle);
-
-                            startActivity(intent);
-
-
+                                                    Intent intent = new Intent(Register.this, DeliveryDetails.class);
+                                                    intent.putExtras(bundle);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                                else
+                                                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }
-
                     }
                 }).addOnFailureListener(this, new OnFailureListener() {
             @Override
@@ -271,7 +277,7 @@ public class Register extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    login(email.getText().toString(),password.getText().toString());
+                    loginUser(email.getText().toString(),password.getText().toString());
                 }
             }
         });

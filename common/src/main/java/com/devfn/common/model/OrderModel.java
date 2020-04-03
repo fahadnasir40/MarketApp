@@ -9,15 +9,47 @@ import java.util.HashMap;
 public class OrderModel implements Serializable {
 
 
-    private String orderNo;
+    private String orderNo,orderId;
     private HashMap<String, CartItem> items;
     private String orderDate;
     private String orderName;
     private String deliveryAddress;
     private int totalOrderPrice;
-    private String deliveryContact;
-    private String deliverUserId;
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    private String deliveryContact;
+    private String deliverUserId,orderStatus,deliveryCity,deliveryPostalCode;
+
+    public String getDeliveryCity() {
+        return deliveryCity;
+    }
+
+    public void setDeliveryCity(String deliveryCity) {
+        this.deliveryCity = deliveryCity;
+    }
+
+    public String getDeliveryPostalCode() {
+        return deliveryPostalCode;
+    }
+
+    public void setDeliveryPostalCode(String deliveryPostalCode) {
+        this.deliveryPostalCode = deliveryPostalCode;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 
     public int getQuantityOrdered(PostItem postItem){
 

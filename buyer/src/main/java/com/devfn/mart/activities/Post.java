@@ -60,7 +60,6 @@ public class Post extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading cart data. Please wait");
 
-        post =  (PostItem) bundle.getSerializable("post_object");
 
         image = findViewById(R.id.post_img);
         name = findViewById(R.id.post_name);
@@ -70,7 +69,16 @@ public class Post extends AppCompatActivity {
         description = findViewById(R.id.post_description);
         addToCartButton = findViewById(R.id.btn_addToCart);
         alreadyAddedCartButton = findViewById(R.id.btn_item_added_to_cart);
+        cartButton = findViewById(R.id.btn_cart);
+        backButton = findViewById(R.id.btn_back_post);
 
+
+        if(FirebaseAuth.getInstance().getUid() != null){
+            cartButton.setVisibility(View.VISIBLE);
+        }
+
+
+        post =  (PostItem) bundle.getSerializable("post_object");
 
 
         Picasso.with(this).load(post.getPhoto()).fit().centerCrop()
@@ -90,7 +98,7 @@ public class Post extends AppCompatActivity {
             description.setText(post.getDescription());
 
 
-        backButton = findViewById(R.id.btn_back_post);
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,13 +110,13 @@ public class Post extends AppCompatActivity {
             }
         });
 
-        cartButton = findViewById(R.id.btn_cart);
+
         cartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Post.this,Cart.class);
-                finish();
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -133,7 +141,7 @@ public class Post extends AppCompatActivity {
 
         if(post != null && FirebaseAuth.getInstance().getUid() != null){
 
-            mHandler.sendMessageDelayed(new Message(), 500);
+            mHandler.sendMessageDelayed(new Message(), 300);
             progressDialog.show();
             final String userId = FirebaseAuth.getInstance().getUid();
 
@@ -247,8 +255,8 @@ public class Post extends AppCompatActivity {
                 dialog.dismiss();
 
                 Intent intent = new Intent(Post.this,Login.class);
-                finish();
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -269,5 +277,7 @@ public class Post extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         databaseReference.removeEventListener(valueEventListener);
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 }

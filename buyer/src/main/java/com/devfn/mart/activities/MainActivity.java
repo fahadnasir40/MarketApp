@@ -4,57 +4,113 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.widget.Toolbar;
 import com.devfn.mart.R;
 import com.devfn.mart.adapters.ItemAdapter;
 import com.devfn.common.model.PostItem;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity {
 
     private List<PostItem> postsList;
     private Button cartButton;
+    private Toolbar toolbar;
+    private TextView signInButton;
     ProgressDialog progressDialog;
 
     DatabaseReference databaseReference;
+
     RecyclerView recyclerView;
     ItemAdapter itemAdapter;
     TextView noItemsText;
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if(FirebaseAuth.getInstance().getUid() != null)
+        {
+
+            signInButton.setVisibility(View.GONE);
+            cartButton.setVisibility(View.VISIBLE);
+
+            getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+            MenuItem userMenuItem = menu.findItem(R.id.menu_welcome_user);
+            userMenuItem.setTitle("Welcome " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            return super.onCreateOptionsMenu(menu);
+
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.menu_log_out:
+                logout();
+                return true;
+            case R.id.menu_orders:
+                Intent intent = new Intent(MainActivity.this,Order.class);
+                startActivity(intent);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout(){
+
+        FirebaseAuth.getInstance().signOut();
+
+        databaseReference.removeEventListener(childEventListener);
+
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+        startActivity(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.home_toolbar);
+        setSupportActionBar(toolbar);
+
 
         cartButton = findViewById(R.id.btn_cart);
 
         postsList = new ArrayList<>();
         progressDialog = new ProgressDialog(this);
         noItemsText = findViewById(R.id.tv_home_no_items);
+        signInButton = findViewById(R.id.tv_home_sign_in);
 
 
         progressDialog.setMessage("Loading Data. Please wait.");
@@ -69,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,Cart.class);
                 startActivity(intent);
+            }
+        });
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,Login.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -175,6 +240,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         databaseReference.removeEventListener(childEventListener);
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
 
     }
 

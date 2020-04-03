@@ -250,46 +250,54 @@ public class Cart extends AppCompatActivity implements CartItemInterface {
         List<CartItem> cartItemList = new ArrayList<>(values);
 
         for(int i = 0;i<values.size();i++){
+            try{
 
-            postReference.orderByKey().equalTo(cartItemList.get(i).getPostId()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                postReference.orderByKey().equalTo(cartItemList.get(i).getPostId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    for(DataSnapshot ds:dataSnapshot.getChildren()){
-                        PostItem post = ds.getValue(PostItem.class);
+                        for(DataSnapshot ds:dataSnapshot.getChildren()){
+                            PostItem post = ds.getValue(PostItem.class);
 
-                        if(!postsList.contains(post) && !childChanged){
-                            postsList.add(post);
+                            if(!postsList.contains(post) && !childChanged){
+                                postsList.add(post);
+                            }
+
+                            if(childChanged ){
+                                postsList.add(post);
+                                totalAmount += (post.getPrice() * orderModel.getQuantityOrdered(post));
+
+                            }
+
                         }
 
-                        if(childChanged ){
-                            postsList.add(post);
-                            totalAmount += (post.getPrice() * orderModel.getQuantityOrdered(post));
+                        if(!childChanged) {
 
+                            totalAmount = orderModel.getTotalOrderPrice();
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
+
+                            if (layoutGone && orderModel != null)
+                                showLayout();
                         }
+
+                        setTotalPrice();
+                        cartAdapter.notifyDataSetChanged();
+
+
 
                     }
 
-                    if(!childChanged) {
 
-                        totalAmount = orderModel.getTotalOrderPrice();
-                        if (progressDialog.isShowing())
-                            progressDialog.dismiss();
-
-                        if (layoutGone && orderModel != null)
-                            showLayout();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(Cart.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
                     }
-
-                    setTotalPrice();
-                    cartAdapter.notifyDataSetChanged();
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(Cart.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-            });
+               });
+            }
+            catch (Exception e){
+                discardCart();
+            }
 
         }
 
@@ -446,5 +454,7 @@ public class Cart extends AppCompatActivity implements CartItemInterface {
         super.onDestroy();
 
         databaseReference.removeEventListener(childEventListener);
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 }

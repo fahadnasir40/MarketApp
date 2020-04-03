@@ -20,10 +20,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/icon_home_toolbar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_shop"/>
+
             <TextView
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/icon_home_toolbar"
+                android:layout_marginStart="8dp"
                 android:text="Home"
                 android:textColor="@color/white"
                 android:textSize="18sp"
@@ -32,13 +40,31 @@
 
             <Button
                 android:id="@+id/btn_cart"
+                android:visibility="gone"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:background="@drawable/ic_shopping_cart_black_24dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginEnd="32dp"
+                android:layout_marginEnd="16dp"
                 />
 
+
+
+            <TextView
+
+                android:id="@+id/tv_home_sign_in"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="32dp"
+                android:text="Sign In"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:fontFamily="@font/roboto"
+                android:textStyle="bold"
+               />
 
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
