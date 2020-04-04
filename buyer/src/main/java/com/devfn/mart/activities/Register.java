@@ -227,20 +227,22 @@ public class Register extends AppCompatActivity {
                                         firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if(task.isSuccessful()) {
+                                                if (task.isSuccessful()) {
                                                     Bundle bundle = new Bundle();
                                                     String callObject = "call_from_register_account";
-                                                    bundle.putSerializable("call_user_object",user);
-                                                    bundle.putSerializable("call_intent",callObject);
+                                                    bundle.putSerializable("call_user_object", user);
+                                                    bundle.putSerializable("call_intent", callObject);
 
                                                     Intent intent = new Intent(Register.this, DeliveryDetails.class);
                                                     intent.putExtras(bundle);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
                                                     startActivity(intent);
                                                     finish();
-                                                }
-                                                else
+                                                } else {
+
                                                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                }
                                             }
                                         });
                                     }
