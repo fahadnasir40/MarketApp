@@ -54,8 +54,8 @@
 
     <ImageView
         android:id="@+id/post_img"
-        android:layout_width="500px"
-        android:layout_height="500px"
+        android:layout_width="155dp"
+        android:layout_height="160dp"
         android:layout_below="@id/post_toolbar"
         android:layout_margin="16dp"
         android:padding="8dp" />

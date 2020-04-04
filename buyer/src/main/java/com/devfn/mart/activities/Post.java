@@ -81,7 +81,7 @@ public class Post extends AppCompatActivity {
         post =  (PostItem) bundle.getSerializable("post_object");
 
 
-        Picasso.with(this).load(post.getPhoto()).fit().centerCrop()
+        Picasso.with(this).load(post.getPhoto()).fit()
                 .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
                 .error(R.drawable.ic_close_black_24dp)
                 .into(image);

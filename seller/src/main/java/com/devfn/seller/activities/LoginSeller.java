@@ -25,6 +25,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginSeller extends AppCompatActivity {
 
@@ -32,7 +37,7 @@ public class LoginSeller extends AppCompatActivity {
 
         private TextInputLayout emailLayout;
         private TextInputLayout passwordLayout;
-
+        private DatabaseReference databaseReference,userReference;
         private TextInputEditText email;
         private TextInputEditText password;
         private ProgressBar progressBar;
@@ -71,6 +76,9 @@ public class LoginSeller extends AppCompatActivity {
                     loginUser();
                 }
             });
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("roles");
+            userReference = FirebaseDatabase.getInstance().getReference("users");
 
         }
 
@@ -130,6 +138,31 @@ public class LoginSeller extends AppCompatActivity {
         }
 
         private void loginAttempt(){
+
+            databaseReference.child("seller").child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String SellerEmail = dataSnapshot.getValue(String.class);
+                    if(SellerEmail.equals(email.getText().toString()))
+                    {
+                        firebaseLogin();
+                    }
+                    else{
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(LoginSeller.this,"User Does not exist",Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(LoginSeller.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
+
+        void firebaseLogin(){
 
             firebaseAuth.signInWithEmailAndPassword(email.getText().toString(),password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
