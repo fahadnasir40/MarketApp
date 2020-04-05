@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/item_details_img"
-            android:layout_width="200px"
-            android:layout_height="200px"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
 
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"

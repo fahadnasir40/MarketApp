@@ -20,8 +20,8 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="450px"
-            android:layout_height="450px"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
             android:id="@+id/item_img"
             android:layout_centerHorizontal="true"
             android:layout_margin="8dp"
