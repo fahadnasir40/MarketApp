@@ -165,11 +165,12 @@
 
         <Button
             android:id="@+id/sign_up"
-            android:layout_width="160dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="36dp"
             android:layout_marginRight="30dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/shape"
             android:text="@string/sign_up"
