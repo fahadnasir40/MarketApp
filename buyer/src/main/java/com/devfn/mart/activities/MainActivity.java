@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.devfn.mart.R;
 import com.devfn.mart.adapters.ItemAdapter;
 import com.devfn.common.model.PostItem;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ItemAdapter itemAdapter;
     TextView noItemsText;
-
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
 

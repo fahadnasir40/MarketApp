@@ -22,9 +22,9 @@
 
             <ImageView
                 android:id="@+id/icon_home_toolbar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_shop"/>
+                android:layout_width="44dp"
+                android:layout_height="32dp"
+                android:src="@drawable/rts_home_logo"/>
 
             <TextView
 
@@ -32,9 +32,10 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/icon_home_toolbar"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
                 android:text="Home"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:fontFamily="@font/roboto"
                 android:textFontWeight="20" />
 

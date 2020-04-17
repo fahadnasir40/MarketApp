@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Market Seller</string>
+    <string name="app_name">RTS Seller</string>
     <string name="post_name">Name</string>
     <string name="price">Price</string>
     <string name="total_items">Total Items</string>

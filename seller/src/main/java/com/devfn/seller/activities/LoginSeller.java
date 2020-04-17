@@ -149,7 +149,7 @@ public class LoginSeller extends AppCompatActivity {
                     }
                     else{
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(LoginSeller.this,"User Does not exist",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginSeller.this,"User does not exist",Toast.LENGTH_SHORT).show();
                     }
                 }
 

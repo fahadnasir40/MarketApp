@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Market</string>
+    <string name="app_name">RTS Store</string>
     <string name="title_activity_login">Login</string>
     <string name="password">Password</string>
     <string name="email">Email</string>

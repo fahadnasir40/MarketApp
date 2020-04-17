@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 public class Login extends AppCompatActivity {
 
@@ -33,7 +35,7 @@ public class Login extends AppCompatActivity {
     private TextInputEditText email;
     private TextInputEditText password;
     private ProgressBar progressBar;
-
+    private ImageView logoImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,13 @@ public class Login extends AppCompatActivity {
         Button btnSignIn = findViewById(R.id.sign_in);
         Button btnSignUp = findViewById(R.id.sign_up);
         Button skip = findViewById(R.id.btn_skip);
+        logoImage = findViewById(R.id.login_logo);
+
+        Picasso.with(this).load(R.drawable.rts_logo_white).fit().centerCrop()
+                .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
+                .error(R.drawable.ic_close_black_24dp)
+                .into(logoImage);
+
 
         TextView forgotPassword = findViewById(R.id.forgetPassword);
 
