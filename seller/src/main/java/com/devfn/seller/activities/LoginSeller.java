@@ -49,6 +49,13 @@ public class LoginSeller extends AppCompatActivity {
 
 
             firebaseAuth = FirebaseAuth.getInstance();
+
+            if(FirebaseAuth.getInstance().getUid() != null){
+                Intent intent = new Intent(LoginSeller.this, MainActivitySeller.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
+                startActivity(intent);
+                finish();
+            }
             Button btnSignIn = findViewById(R.id.sign_in);
 
             emailLayout = findViewById(R.id.textInputLayoutEmail);

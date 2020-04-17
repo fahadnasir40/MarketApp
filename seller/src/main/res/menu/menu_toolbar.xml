@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/menu_main_menu"
+        android:title=""
+        app:showAsAction="always"
+        android:icon="@drawable/ic_more_vert_black_24dp"
+        >
+
+        <menu>
+
+<!--            <item-->
+<!--                android:title="Welcome User"-->
+<!--                android:id="@+id/menu_welcome_user"-->
+<!--                app:showAsAction="never"-->
+<!--                android:icon="@drawable/ic_user"-->
+<!--                />-->
+
+<!--            <item-->
+<!--                android:title="Orders"-->
+<!--                android:id="@+id/menu_orders"-->
+<!--                app:showAsAction="never"-->
+<!--                android:icon="@drawable/ic_order"-->
+<!--                />-->
+
+            <item
+                android:title="Log Out"
+                android:id="@+id/menu_log_out"
+                android:icon="@drawable/ic_logout"
+                app:showAsAction="never" />
+
+        </menu>
+
+    </item>
+</menu>

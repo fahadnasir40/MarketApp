@@ -56,8 +56,9 @@ public class CreatePost extends AppCompatActivity {
 
     ProgressDialog progressDialog;
 
-    Button postButton;
+    Button postButton,backButton;
     Button uploadImageButton;
+
 
     ImageView imageId;
 
@@ -88,7 +89,16 @@ public class CreatePost extends AppCompatActivity {
         itemQuantity = findViewById(R.id.et_post_total_items);
         description = findViewById(R.id.et_post_description);
         deliveryDays = findViewById(R.id.et_post_delivery_days);
+        backButton = findViewById(R.id.btn_back_create_post);
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CreatePost.this,MainActivitySeller.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         imageId = findViewById(R.id.image_id);
 
