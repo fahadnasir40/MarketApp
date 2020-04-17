@@ -3,6 +3,7 @@ package com.devfn.mart.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,14 +43,22 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
+
         Picasso.with(mContext).load(PostItems.get(position).getPhoto()).fit()
                 .placeholder(R.drawable.ic_add_shopping_cart_black_24dp)
                 .error(R.drawable.ic_close_black_24dp)
                 .into(holder.image);
 
-        holder.name.setText(PostItems.get(position).getName());
+        String name = PostItems.get(position).getName();
+        if(name.length() > 40){
+            name = name.substring(0,40) + "....";
+            holder.name.setText(name );
+        }
+        else
+            holder.name.setText(name);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true); // this will also round numbers, 3
+
 
         holder.price.setText("Rs. "+ myFormat.format(PostItems.get(position).getPrice()));
 

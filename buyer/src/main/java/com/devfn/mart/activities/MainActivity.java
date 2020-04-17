@@ -18,17 +18,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import com.devfn.mart.R;
 import com.devfn.mart.adapters.ItemAdapter;
 import com.devfn.common.model.PostItem;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,71 +44,41 @@ public class MainActivity extends AppCompatActivity {
     private Button cartButton;
     private Toolbar toolbar;
     private TextView signInButton;
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
-    DatabaseReference databaseReference;
-
+    private DatabaseReference databaseReference;
+    private DatabaseReference userReference;
     RecyclerView recyclerView;
     ItemAdapter itemAdapter;
     TextView noItemsText;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        if(FirebaseAuth.getInstance().getUid() != null)
-        {
-
-            signInButton.setVisibility(View.GONE);
-            cartButton.setVisibility(View.VISIBLE);
-
-            getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-            MenuItem userMenuItem = menu.findItem(R.id.menu_welcome_user);
-            userMenuItem.setTitle("Welcome " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-            return super.onCreateOptionsMenu(menu);
-
+    private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user!=null) {
+                signInButton.setVisibility(View.GONE);
+                cartButton.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                signInButton.setVisibility(View.VISIBLE);
+                cartButton.setVisibility(View.GONE);
+            }
         }
+    };
 
 
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId()){
-
-            case R.id.menu_log_out:
-                logout();
-                return true;
-            case R.id.menu_orders:
-                Intent intent = new Intent(MainActivity.this,Order.class);
-                startActivity(intent);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void logout(){
-
-        FirebaseAuth.getInstance().signOut();
-
-        databaseReference.removeEventListener(childEventListener);
-
-        Intent intent = new Intent(MainActivity.this, Login.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        finish();
-        startActivity(intent);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        toolbar = findViewById(R.id.home_toolbar);
-        setSupportActionBar(toolbar);
+        FirebaseAnalytics  mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        toolbar = findViewById(R.id.home_toolbar);
+
+        setSupportActionBar(toolbar);
 
         cartButton = findViewById(R.id.btn_cart);
 
@@ -119,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.home_items_list);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
         cartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,14 +116,89 @@ public class MainActivity extends AppCompatActivity {
 
 
         readAllPosts();
+        checkCartInfo();
+
     }
 
+    private void checkCartInfo() {
+         userReference = FirebaseDatabase.getInstance().getReference("users");
+
+         if(FirebaseAuth.getInstance().getUid() != null)
+
+
+          userReference = FirebaseDatabase.getInstance().getReference("cart");
+             userReference.child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                     if(dataSnapshot.exists()){
+                         cartButton.setBackground(getResources().getDrawable(R.drawable.cart_filled));
+                     }
+                     else{
+                         cartButton.setBackground(getResources().getDrawable(R.drawable.ic_shopping_cart_black_24dp));
+                     }
+                 }
+
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                 }
+             });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if(FirebaseAuth.getInstance().getUid() != null){
+            signInButton.setVisibility(View.GONE);
+            cartButton.setVisibility(View.VISIBLE);
+            getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+            MenuItem userMenuItem = menu.findItem(R.id.menu_welcome_user);
+            userMenuItem.setTitle("Welcome " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            return super.onCreateOptionsMenu(menu);
+        }
+        return false;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.menu_log_out:
+                logout();
+                return true;
+            case R.id.menu_orders:
+                Intent intent = new Intent(MainActivity.this,Order.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_welcome_user:
+                Intent intent1 = new Intent(MainActivity.this,UserProfile.class);
+                startActivity(intent1);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout(){
+
+        FirebaseAuth.getInstance().signOut();
+
+        databaseReference.removeEventListener(childEventListener);
+
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+        startActivity(intent);
+    }
 
     void readAllPosts(){
 
         postsList.clear();
 
         itemAdapter = new ItemAdapter(postsList,MainActivity.this);
+
         recyclerView.setAdapter(itemAdapter);
 
         Query query = databaseReference.orderByChild("datePosted");

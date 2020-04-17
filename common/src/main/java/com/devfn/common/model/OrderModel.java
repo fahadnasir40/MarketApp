@@ -59,6 +59,13 @@ public class OrderModel implements Serializable {
         return 0;
     }
 
+    public int getPriceOrdered(PostItem postItem){
+
+        if(items.containsKey(postItem.getPostId())){
+            return items.get(postItem.getPostId()).getPriceOrdered();
+        }
+        return 0;
+    }
 
 
     public void addItems(CartItem post){

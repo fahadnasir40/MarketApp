@@ -76,7 +76,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
 
         int size = PostItems.get(position).getQuantity();
         List<String> quantity = new ArrayList<>(size);
-        for(int i = 0;i<size;i++){
+
+        for(int i = 0;i<size && i < 10;i++){
             quantity.add(String.valueOf(i+1));
         }
 
@@ -104,6 +105,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.PostViewHolder
 
         }
 
+        if(cartItemList.get(position).getPriceOrdered() != PostItems.get(position).getPrice()) {
+            cartItem.RefreshItemPrice(PostItems.get(position),cartItemList.get(position).getPriceOrdered());
+        }
 
         holder.spinnerItems.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

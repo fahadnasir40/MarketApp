@@ -45,7 +45,7 @@ public class Post extends AppCompatActivity {
     private PostItem post;
     private OrderModel cart;
     private ProgressDialog progressDialog;
-
+    DatabaseReference cartReference;
     DatabaseReference databaseReference;
 
     @Override
@@ -134,7 +134,7 @@ public class Post extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cart");
         readData();
-
+        checkCartInfo();
     }
 
     void readData(){
@@ -151,6 +151,31 @@ public class Post extends AppCompatActivity {
         }
     }
 
+    private void checkCartInfo() {
+
+
+        if(FirebaseAuth.getInstance().getUid() != null)
+
+            cartReference = FirebaseDatabase.getInstance().getReference("cart");
+            cartReference.child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    cartButton.setBackground(getResources().getDrawable(R.drawable.cart_filled));
+                }
+                else{
+                    cartButton.setBackground(getResources().getDrawable(R.drawable.ic_shopping_cart_black_24dp));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
     private void addItemToCart(){
 
         if(post.getQuantity() > 0)
@@ -163,7 +188,7 @@ public class Post extends AppCompatActivity {
             }
 
 
-            CartItem cartItem = new CartItem(post.getPostId(),1);
+            CartItem cartItem = new CartItem(post.getPostId(),1,post.getPrice());
             cart.addItems(cartItem);
             cart.setTotalOrderPrice(cart.getTotalOrderPrice() + post.getPrice());
 

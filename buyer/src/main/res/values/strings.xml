@@ -4,4 +4,9 @@
     <string name="delivery_postal_code">Postal Code</string>
     <string name="delivery_city">City</string>
     <string name="payment_method">Payment Method: Cash on delivery</string>
+    <string name="change_password">Change Password</string>
+    <string name="name">"Name: "</string>
+    <string name="email_profile">Email:</string>
+    <string name="delivery_details">Delivery Details</string>
+    <string name="contactno">Contact No:</string>
 </resources>

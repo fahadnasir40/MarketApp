@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fillViewport="true"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+
+        tools:context=".activities.EditProfile">
+
+
+
+        <androidx.appcompat.widget.Toolbar
+
+            android:id="@+id/edit_profile_toolbar"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/toolbar_title_edit_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Profile"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="18sp"
+                    android:textFontWeight="200"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/btn_back_edit_profile"/>
+
+
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/btn_back_edit_profile"
+                    android:padding="32dp"
+                    android:background="@drawable/ic_arrow_back_black_24dp"
+                    />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/delivery_enter_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter Details"
+            android:layout_below="@id/edit_profile_toolbar"
+            android:layout_margin="32dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textStyle="bold"
+
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEditName"
+            style="@style/editTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/textStyle"
+
+            android:layout_centerInParent="true"
+
+            android:layout_below="@id/delivery_enter_details">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_edit_profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/full_name"
+                android:inputType="text"
+                android:maxLength="50" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEditContactNo"
+            style="@style/editTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/textStyle"
+
+            android:layout_centerInParent="true"
+
+            android:layout_below="@id/textInputLayoutEditName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_edit_delivery_contact_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/contact_no"
+                android:inputType="phone"
+                android:maxLength="20" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEditDeliveryAddress"
+            style="@style/editTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="32dp"
+
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/textStyle"
+
+            android:layout_centerInParent="true"
+
+            android:layout_below="@id/textInputLayoutEditContactNo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_edit_delivery_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/delivery_addres"
+                android:inputType="textMultiLine"
+                android:maxLines="5" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEditPostalCode"
+            style="@style/editTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="32dp"
+            android:focusable="true"
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/textStyle"
+
+            android:layout_centerInParent="true"
+
+            android:layout_below="@id/textInputLayoutEditDeliveryAddress" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_edit_delivery_postal_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/delivery_postal_code"
+                android:inputType="number"
+                android:maxLength="10" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEditCity"
+            style="@style/editTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="32dp"
+            android:focusable="true"
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/textStyle"
+
+            android:layout_centerInParent="true"
+
+            android:layout_below="@id/textInputLayoutEditPostalCode" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_edit_delivery_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/delivery_city"
+                android:inputType="text"
+                android:maxLength="30" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+        <Button
+            android:id="@+id/btn_edit_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textInputLayoutEditCity"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="32dp"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+
+    </RelativeLayout>
+
+
+
+</ScrollView>

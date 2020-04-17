@@ -7,13 +7,24 @@ public class CartItem implements Serializable {
     private String postId;
     private int quantityOrdered;
 
+    private int priceOrdered;
+
     public CartItem() {
         quantityOrdered = 0;
     }
 
-    public CartItem(String postId, int quantityOrdered) {
+    public int getPriceOrdered() {
+        return priceOrdered;
+    }
+
+    public void setPriceOrdered(int priceOrdered) {
+        this.priceOrdered = priceOrdered;
+    }
+
+    public CartItem(String postId, int quantityOrdered, int priceOrdered) {
         this.postId = postId;
         this.quantityOrdered = quantityOrdered;
+        this.priceOrdered = priceOrdered;
     }
 
     public String getPostId() {

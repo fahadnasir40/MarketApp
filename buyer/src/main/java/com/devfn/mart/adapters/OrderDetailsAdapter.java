@@ -51,12 +51,13 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
         for(CartItem cartItem:cartItemList){
             if(cartItem.getPostId().equals(PostItems.get(position).getPostId()))        {
                 holder.quantity.setText("Quantity Ordered: " + cartItem.getQuantityOrdered() );
+                holder.price.setText("Rs. " + getFormattedNumber(cartItem.getPriceOrdered()));
                 break;
             }
         }
 
         holder.deliveryTime.setText("Expected Delivery Time: " + PostItems.get(position).getDeliveryTime() +" days");
-        holder.price.setText("Rs. " + getFormattedNumber(PostItems.get(position).getPrice()));
+
     }
 
     String getFormattedNumber(int number){

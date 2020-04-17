@@ -12,8 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".activities.OrderDetails"></activity>
+        <activity android:name=".activities.EditProfile"></activity>
+        <activity android:name=".activities.UserProfile" />
+        <activity android:name=".activities.OrderDetails" />
         <activity android:name=".activities.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

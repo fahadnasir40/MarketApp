@@ -283,11 +283,7 @@ public class Cart extends AppCompatActivity implements CartItemInterface {
 
                         setTotalPrice();
                         cartAdapter.notifyDataSetChanged();
-
-
-
                     }
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -419,7 +415,30 @@ public class Cart extends AppCompatActivity implements CartItemInterface {
 
     }
 
-     void discardCart() {
+
+    @Override
+    public void RefreshItemPrice(final PostItem postItem, final int oldPrice) {
+        if(orderModel!=null){
+
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo())
+                    .child("items").child(postItem.getPostId()).child("priceOrdered")
+                    .setValue(postItem.getPrice()).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if(task.isSuccessful()){
+                        totalAmount  += postItem.getPrice() - oldPrice;
+                        databaseReference.child(FirebaseAuth.getInstance().getUid()).child(orderModel.getOrderNo()).child("totalOrderPrice").setValue(totalAmount);
+                        setTotalPrice();
+                    }
+                }
+            });
+
+        }
+    }
+
+    void discardCart() {
         if (databaseReference != null)
             databaseReference.child(FirebaseAuth.getInstance().getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
