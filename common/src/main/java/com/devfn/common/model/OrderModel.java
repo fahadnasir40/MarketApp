@@ -16,6 +16,15 @@ public class OrderModel implements Serializable {
     private String deliveryAddress;
     private int totalOrderPrice;
 
+    public String getSellerMessage() {
+        return SellerMessage;
+    }
+
+    public void setSellerMessage(String sellerMessage) {
+        SellerMessage = sellerMessage;
+    }
+
+    private String SellerMessage;
     public String getOrderId() {
         return orderId;
     }

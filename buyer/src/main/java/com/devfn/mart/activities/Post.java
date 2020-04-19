@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -134,7 +135,8 @@ public class Post extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cart");
         readData();
-        checkCartInfo();
+        if(cartButton.getVisibility() == View.VISIBLE)
+            checkCartInfo();
     }
 
     void readData(){
@@ -154,25 +156,27 @@ public class Post extends AppCompatActivity {
     private void checkCartInfo() {
 
 
-        if(FirebaseAuth.getInstance().getUid() != null)
+        if(FirebaseAuth.getInstance().getUid() != null) {
 
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            String userId = firebaseUser.getUid();
             cartReference = FirebaseDatabase.getInstance().getReference("cart");
-            cartReference.child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    cartButton.setBackground(getResources().getDrawable(R.drawable.cart_filled));
+            cartReference.child(userId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        cartButton.setBackground(getResources().getDrawable(R.drawable.cart_filled));
+                    } else {
+                        cartButton.setBackground(getResources().getDrawable(R.drawable.ic_shopping_cart_black_24dp));
+                    }
                 }
-                else{
-                    cartButton.setBackground(getResources().getDrawable(R.drawable.ic_shopping_cart_black_24dp));
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }
     }
 
 

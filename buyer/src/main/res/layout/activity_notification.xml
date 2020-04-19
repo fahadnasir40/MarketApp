@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.Notification">
+
+
+    <androidx.appcompat.widget.Toolbar
+
+        android:id="@+id/notification_toolbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/toolbar_title_notifications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notifications"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto"
+                android:textSize="18sp"
+                android:textFontWeight="200"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@id/btn_back_notifications"/>
+
+
+            <Button
+
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:id="@+id/btn_back_notifications"
+                android:padding="32dp"
+                android:background="@drawable/ic_arrow_back_black_24dp"
+                />
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_notification_clear"
+        android:text="Clear Notifications"
+        android:layout_below="@id/notification_toolbar"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/roboto"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_notification_empty_notifications"
+        android:text="No new notification"
+        android:layout_below="@id/notification_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto"
+        android:textStyle="normal"
+        android:textSize="18sp"
+        android:layout_margin="48dp"
+        android:visibility="gone"
+        />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_notification_clear"
+            android:layout_margin="4dp"
+            android:id="@+id/rv_notifications"
+            />
+</RelativeLayout>

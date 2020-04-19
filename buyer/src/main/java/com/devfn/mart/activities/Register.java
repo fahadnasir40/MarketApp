@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -26,6 +27,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class Register extends AppCompatActivity {
 
@@ -218,6 +223,24 @@ public class Register extends AppCompatActivity {
 
                             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+                            FirebaseInstanceId.getInstance().getInstanceId()
+                                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                            if (!task.isSuccessful()) {
+                                                Log.w(TAG, "getInstanceId failed", task.getException());
+                                                return;
+                                            }
+
+                                            // Get new Instance ID token
+                                            String token = task.getResult().getToken();
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                                            String uid = FirebaseAuth.getInstance().getUid();
+                                            ref.child(uid).child("device_token").setValue(token);
+                                        }
+                                    });
+
+
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name.getText().toString()).build();
                             firebaseUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -228,6 +251,9 @@ public class Register extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
+
+
+
                                                     Bundle bundle = new Bundle();
                                                     String callObject = "call_from_register_account";
                                                     bundle.putSerializable("call_user_object", user);

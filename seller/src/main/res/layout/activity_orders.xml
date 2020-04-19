@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="4dp">
+
+    <androidx.appcompat.widget.Toolbar
+
+        android:id="@+id/orders_toolbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:id="@+id/btn_back_orders"
+                android:padding="48dp"
+                android:background="@drawable/ic_arrow_back_black_24dp"
+                />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Orders"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/btn_back_orders"
+                android:fontFamily="@font/roboto" />
+
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs_orders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
+        android:background="@color/colorPrimaryDark"
+        app:tabSelectedTextColor="@android:color/holo_blue_light"
+        app:tabTextColor="@color/white"
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/MyCustomTabText"
+        android:layout_below="@id/orders_toolbar"
+       >
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tabs_orders"
+        >
+
+    </androidx.viewpager.widget.ViewPager>
+
+</RelativeLayout>

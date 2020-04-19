@@ -67,7 +67,8 @@ public class MainActivitySeller extends AppCompatActivity {
         ordersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivitySeller.this,Orders.class);
+                startActivity(intent);
             }
         });
 
@@ -175,6 +176,11 @@ public class MainActivitySeller extends AppCompatActivity {
     }
 
     private void logout() {
+
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        String uid = FirebaseAuth.getInstance().getUid();
+        ref.child(uid).child("device_token").removeValue();
 
         FirebaseAuth.getInstance().signOut();
 

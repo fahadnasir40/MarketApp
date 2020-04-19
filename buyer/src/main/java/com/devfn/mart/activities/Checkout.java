@@ -18,6 +18,7 @@ import com.devfn.common.model.OrderModel;
 import com.devfn.common.model.PostItem;
 import com.devfn.common.model.User;
 import com.devfn.mart.R;
+import com.devfn.mart.models.NotificationModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +43,7 @@ public class Checkout extends AppCompatActivity {
     private TextView orderNo,orderDate,totalPrice;
     private TextView name,address,contactNumber,changeDeliveryDetailsButton;
 
-    private DatabaseReference databaseReference,ordersReference,cartReference,postReference,postWriteReference;
+    private DatabaseReference databaseReference,ordersReference,cartReference,postReference,postWriteReference,notificationReference;
     private User currentUser;
     private ProgressDialog progressDialog,orderProgressDialog;
     private int newOrderNumber = -1;
@@ -116,6 +117,7 @@ public class Checkout extends AppCompatActivity {
 
               startDeliveryActivity();
 
+
             }
         });
 
@@ -130,6 +132,7 @@ public class Checkout extends AppCompatActivity {
         progressDialog.show();
 
         loadDeliveryDetails();
+
     }
 
     void startDeliveryActivity(){
@@ -192,7 +195,6 @@ public class Checkout extends AppCompatActivity {
                     });
                 }
 
-                databaseReference.child(FirebaseAuth.getInstance().getUid()).child("orders").child(orderNo).setValue(orderNo);
                 ordersReference.child(FirebaseAuth.getInstance().getUid()).child(orderNo).setValue(orderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -235,6 +237,7 @@ public class Checkout extends AppCompatActivity {
                 Toast.makeText(Checkout.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     String getFormattedNumber(int number){
@@ -249,20 +252,39 @@ public class Checkout extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-
                         if(orderProgressDialog.isShowing())
                             orderProgressDialog.dismiss();
 
-                        Intent intent = new Intent(Checkout.this,MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
-                        startActivity(intent);
-                        finish();
-
-                        Toast.makeText(getApplicationContext(),"Your order has been placed",Toast.LENGTH_LONG).show();
-
+                        generateSellerNotification();
                     }
                 }
             });
+    }
+
+    private void generateSellerNotification() {
+
+        notificationReference = FirebaseDatabase.getInstance().getReference("sellerNotifications");
+        String nId = notificationReference.child(currentUser.getUserId()).push().getKey();
+
+        NotificationModel newNotification = new NotificationModel();
+        newNotification.setNotificationId(nId);
+        newNotification.setType("newOrder");
+        newNotification.setOrderId(orderModel.getOrderId());
+        newNotification.setUserId(currentUser.getUserId());
+        newNotification.setDate(orderModel.getOrderDate());
+
+        notificationReference.child(currentUser.getUserId()).child(nId).setValue(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                Intent intent = new Intent(Checkout.this,MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack
+                startActivity(intent);
+                finish();
+
+                Toast.makeText(getApplicationContext(),"Your order has been placed",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

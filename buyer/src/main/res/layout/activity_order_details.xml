@@ -95,7 +95,7 @@
             android:textSize="16sp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="32dp"
-            android:textFontWeight="100"
+            android:textFontWeight="200"
             android:textStyle="bold"
             android:fontFamily="@font/roboto"/>
 
@@ -128,7 +128,36 @@
             android:textStyle="normal"
             android:fontFamily="@font/roboto"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status_note_title"
+            android:layout_below="@id/item_order_details_status"
 
+            android:text="Note from Seller:  "
+            android:textStyle="bold"
+            android:textColor="@color/warningColor"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status_note"
+            android:layout_below="@id/item_order_details_status"
+            android:layout_toEndOf="@id/item_order_details_status_note_title"
+            android:text="Note details"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:fontFamily="@font/roboto"/>
 
         <View
             android:id="@+id/oder_details_bar"
@@ -156,8 +185,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:text="Shipping Address: "
-            android:layout_below="@id/item_order_details_status_title"
+            android:layout_below="@id/item_order_details_status_note"
 
             />
 
@@ -165,12 +195,13 @@
             android:id="@+id/order_details_shipping_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:layout_toEndOf="@id/order_details_shipping_address_title"
             android:text="Address "
-            android:layout_below="@id/item_order_details_status_title"
+            android:layout_below="@id/item_order_details_status_note"
 
             />
 

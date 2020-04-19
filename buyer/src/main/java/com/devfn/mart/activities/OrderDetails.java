@@ -41,7 +41,7 @@ public class OrderDetails extends AppCompatActivity {
     private Button backButton;
     private OrderDetailsAdapter orderDetailsAdapter;
     private DatabaseReference databaseReference,orderReference;
-    private TextView orderNo,totalPrice,shippingAddress,dateOrdered,cancelOrder,orderStatus;
+    private TextView orderNo,totalPrice,shippingAddress,dateOrdered,cancelOrder,orderStatus,noteTitle,noteDetails;
     private List<PostItem> postsList;
     private List<CartItem> cartItemList;
     private OrderModel order;
@@ -66,11 +66,15 @@ public class OrderDetails extends AppCompatActivity {
         shippingAddress = findViewById(R.id.order_details_shipping_address);
         dateOrdered = findViewById(R.id.order_details_tv_order_date);
         orderStatus = findViewById(R.id.item_order_details_status);
+        noteTitle = findViewById(R.id.item_order_details_status_note_title);
+        noteDetails =findViewById(R.id.item_order_details_status_note);
 
         recyclerView = findViewById(R.id.rv_orders_details);
         backButton = findViewById(R.id.btn_back_orders_details);
         cancelOrder = findViewById(R.id.order_details_cancel_order);
 
+        postsList = new ArrayList<>();
+        cartItemList = new ArrayList<>();
 
         progressDialog = new ProgressDialog(this);
 
@@ -82,14 +86,15 @@ public class OrderDetails extends AppCompatActivity {
             setOrderDetails();
             if(order.getOrderStatus().equals("Cancelled"))
                 cancelOrder.setVisibility(View.GONE);
+
         }
 
-        postsList = new ArrayList<>();
-        cartItemList = new ArrayList<>();
 
-        orderDetailsAdapter = new OrderDetailsAdapter(postsList,cartItemList,this);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        orderDetailsAdapter = new OrderDetailsAdapter(postsList,cartItemList,this);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +120,16 @@ public class OrderDetails extends AppCompatActivity {
 
 
     void setOrderDetails(){
+
+        if(order.getSellerMessage() != null){
+            if(noteTitle.getVisibility() == View.GONE){
+                noteTitle.setVisibility(View.VISIBLE);
+                noteDetails.setVisibility(View.VISIBLE);
+            }
+            noteDetails.setText(order.getSellerMessage());
+        }
+
+
         orderNo.setText("Order No. "+ order.getOrderNo());
         totalPrice.setText("Rs. "+ getFormattedNumber(order.getTotalOrderPrice()));
         dateOrdered.setText("Placed on " + order.getOrderDate());

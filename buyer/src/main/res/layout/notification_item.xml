@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="4dp">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <ImageView
+            android:id="@+id/image_notification"
+            android:layout_margin="8dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/shipping"
+            />
+
+    <TextView
+        android:id="@+id/notification_tv_order_shipping"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/image_notification"
+        android:text="Your Order is on its way"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_margin="8dp"
+        android:fontFamily="@font/roboto"
+        />
+
+
+    <TextView
+        android:id="@+id/order_tv_order_date"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="22 Apr 2020"
+        android:textSize="11sp"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/image_notification"
+
+        android:fontFamily="@font/roboto"
+        android:layout_below="@id/notification_tv_order_shipping"
+        />
+
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_order_status_title"
+        android:text="Order No."
+        android:textColor="@color/black"
+        android:textSize="12sp"
+
+        android:layout_margin="8dp"
+        android:textFontWeight="100"
+        android:layout_toEndOf="@+id/image_notification"
+
+        android:textStyle="bold"
+        android:layout_below="@id/order_tv_order_date"
+        android:fontFamily="@font/roboto"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_notification_order_no"
+        android:layout_below="@id/order_tv_order_date"
+        android:layout_toEndOf="@id/item_order_status_title"
+        android:layout_toStartOf="@+id/item_notification_show_details"
+
+        android:text="123123asdfasd1231231fa123"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_notification_show_details"
+            android:layout_below="@id/notification_tv_order_shipping"
+            android:layout_alignParentEnd="true"
+            android:text="Show details "
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="16dp"
+            android:textStyle="bold"
+
+            android:fontFamily="@font/roboto"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/item_notification_order_no"
+            android:background="@color/LightGrey"
+            android:layout_margin="8dp"/>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

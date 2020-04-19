@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -30,6 +31,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class LoginSeller extends AppCompatActivity {
 
@@ -179,6 +184,24 @@ public class LoginSeller extends AppCompatActivity {
                     if(task.isSuccessful()){
 
                         firebaseAuth.getCurrentUser().reload(); // reloads user fields, like emailVerified:
+
+                        FirebaseInstanceId.getInstance().getInstanceId()
+                                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                        if (!task.isSuccessful()) {
+                                            Log.w(TAG, "getInstanceId failed", task.getException());
+                                            return;
+                                        }
+
+                                        // Get new Instance ID token
+                                        String token = task.getResult().getToken();
+                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                                        String uid = FirebaseAuth.getInstance().getUid();
+                                        ref.child(uid).child("device_token").setValue(token);
+                                    }
+                                });
+
 
                         Intent intent = new Intent(LoginSeller.this, MainActivitySeller.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);    //clear stack

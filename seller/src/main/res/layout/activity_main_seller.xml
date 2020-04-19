@@ -10,8 +10,6 @@
     <androidx.appcompat.widget.Toolbar
 
         android:id="@+id/home_toolbar"
-
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark">
@@ -30,12 +28,7 @@
                 android:fontFamily="@font/roboto"
                 android:textFontWeight="20" />
 
-
-
-
-
             <Button
-
                 android:id="@+id/btn_create_post"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
@@ -44,24 +37,20 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginStart="16dp"
-
-                android:backgroundTint="@color/white"
-
-                />
-
+                android:backgroundTint="@color/white" />
 
             <Button
                 android:id="@+id/btn_home_orders"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_alignParentEnd="true"
-
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/ic_order"
                 />
-        </RelativeLayout>
-    </androidx.appcompat.widget.Toolbar>
 
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
 
     <TextView
@@ -78,10 +67,7 @@
         android:visibility="gone"
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
-        android:textSize="16sp"
-
-
-        />
+        android:textSize="16sp" />
 
     <View
         android:id="@+id/bar_post_title"

@@ -2,15 +2,23 @@ package com.devfn.mart.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +31,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.devfn.mart.R;
 import com.devfn.mart.adapters.ItemAdapter;
 import com.devfn.common.model.PostItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,9 +43,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,28 +66,13 @@ public class MainActivity extends AppCompatActivity {
     ItemAdapter itemAdapter;
     TextView noItemsText;
 
-    private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user!=null) {
-                signInButton.setVisibility(View.GONE);
-                cartButton.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                signInButton.setVisibility(View.VISIBLE);
-                cartButton.setVisibility(View.GONE);
-            }
-        }
-    };
-
-
+    //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 Api sendgrid
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         FirebaseAnalytics  mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         toolbar = findViewById(R.id.home_toolbar);
@@ -114,20 +113,69 @@ public class MainActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("posts");
 
+        checkSessionInfo();
 
         readAllPosts();
         checkCartInfo();
+    }
+
+
+    void checkSessionInfo(){
+
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                return;
+                            }
+                            // Get new Instance ID token
+                            final String currentToken = task.getResult().getToken();
+
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                            String uid = FirebaseAuth.getInstance().getUid();
+                            ref.child(uid).child("device_token").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()){
+                                        String token = dataSnapshot.getValue(String.class);
+                                        if(!currentToken.equals(token)){
+                                            Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
+                                            logout(true);
+                                        }
+                                    }
+                                    else if(FirebaseAuth.getInstance().getUid() != null){
+                                        Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
+                                        logout(true);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    });
+        }
 
     }
 
+
+
     private void checkCartInfo() {
-         userReference = FirebaseDatabase.getInstance().getReference("users");
+        userReference = FirebaseDatabase.getInstance().getReference("users");
 
-         if(FirebaseAuth.getInstance().getUid() != null)
+        if (FirebaseAuth.getInstance().getUid() != null)
+        {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            String userId= firebaseUser.getUid();
+              userReference = FirebaseDatabase.getInstance().getReference("cart");
 
 
-          userReference = FirebaseDatabase.getInstance().getReference("cart");
-             userReference.child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+             userReference.child(userId).addValueEventListener(new ValueEventListener() {
                  @Override
                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                      if(dataSnapshot.exists()){
@@ -143,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
 
                  }
              });
+
+        }
     }
 
     @Override
@@ -166,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
 
             case R.id.menu_log_out:
-                logout();
+                logout(false);
                 return true;
             case R.id.menu_orders:
                 Intent intent = new Intent(MainActivity.this,Order.class);
@@ -176,16 +226,27 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(MainActivity.this,UserProfile.class);
                 startActivity(intent1);
                 return true;
+            case R.id.menu_notifications:
+                Intent intent2 = new Intent(MainActivity.this, Notification.class);
+                startActivity(intent2);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void logout(){
+    private void logout(boolean sessionExpired){
 
-        FirebaseAuth.getInstance().signOut();
+
+        if(!sessionExpired){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+            String uid = FirebaseAuth.getInstance().getUid();
+            ref.child(uid).child("device_token").removeValue();
+        }
 
         databaseReference.removeEventListener(childEventListener);
+
+        FirebaseAuth.getInstance().signOut();
 
         Intent intent = new Intent(MainActivity.this, Login.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -264,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             Toast.makeText(MainActivity.this,databaseError.getMessage(),Toast.LENGTH_SHORT).show();
-
         }
     };
 
