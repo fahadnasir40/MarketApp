@@ -56,27 +56,51 @@
         android:layout_width="180dp"
         android:layout_height="180dp"
         android:layout_below="@id/post_toolbar"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="16dp"
         android:padding="8dp" />
 
-    <TextView
-        android:id="@+id/post_price"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_toolbar"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
         android:layout_alignParentEnd="true"
-        android:fontFamily="@font/roboto"
-        android:text="Rs. 850"
-        android:textColor="@color/colorPrimary"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_margin="4dp"
+        android:foregroundGravity="right"
+        android:layout_below="@id/post_toolbar"
+
+        android:id="@+id/ll_post">
+        <TextView
+            android:id="@+id/post_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:layout_marginEnd="32dp"
+            android:layout_gravity="right"
+            android:fontFamily="@font/roboto"
+            android:text="Rs. 850"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+
+        <Button
+            android:id="@+id/btn_addToCart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/selector"
+            android:text=" Add to Cart"
+            android:textColor="@color/white"
+            android:padding="12dp"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_add_shopping_cart_black_24dp" />
+
+
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -154,44 +178,6 @@
      />
 
 
-    <Button
-        android:id="@+id/btn_addToCart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/post_img"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/shape"
-        android:layout_below="@id/post_price"
-        android:text=" Add to Cart"
-        android:textColor="@color/white"
-        android:padding="12dp"
-        android:fontFamily="@font/roboto"
-        android:textStyle="bold"
-        android:drawableStart="@drawable/ic_add_shopping_cart_black_24dp" />
-
-    <Button
-        android:id="@+id/btn_item_added_to_cart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/shape"
-        android:layout_below="@id/post_price"
-        android:text=" Item Added to Cart"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:padding="8dp"
-        android:fontFamily="@font/roboto"
-        android:textStyle="bold"
-        android:drawableStart="@drawable/ic_check_black_24dp"
-        android:visibility="gone"/>
 
 
 </RelativeLayout>

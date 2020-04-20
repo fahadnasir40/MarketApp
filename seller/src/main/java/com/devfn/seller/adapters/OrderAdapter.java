@@ -2,7 +2,6 @@ package com.devfn.seller.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.devfn.common.model.OrderModel;
 import com.devfn.seller.R;
+import com.devfn.seller.activities.OrderDetails;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -46,17 +46,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.PostViewHold
 
         holder.orderTotalPrice.setText("Rs. "+ getFormattedNumber(ordersList.get(position).getTotalOrderPrice()));
 
-//        holder.showDetails.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("order_object_details",ordersList.get(position));
-//
-////                Intent intent = new Intent(mContext, OrderDetails.class);
-////                intent.putExtras(bundle);
-////                mContext.startActivity(intent);
-//            }
-//        });
+        holder.showDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(mContext, OrderDetails.class);
+
+                intent.putExtra("order_id",ordersList.get(position).getOrderId());
+                intent.putExtra("order_userId",ordersList.get(position).getDeliverUserId());
+
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 

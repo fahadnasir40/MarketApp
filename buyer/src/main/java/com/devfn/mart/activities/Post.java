@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,7 +43,7 @@ public class Post extends AppCompatActivity {
 
     private ImageView image;
     private TextView name,description,price,deliveryTime,quantity;
-    private Button backButton,cartButton,addToCartButton,alreadyAddedCartButton;
+    private Button backButton,cartButton,addToCartButton;
     private PostItem post;
     private OrderModel cart;
     private ProgressDialog progressDialog;
@@ -69,7 +70,6 @@ public class Post extends AppCompatActivity {
         quantity = findViewById(R.id.post_quantity);
         description = findViewById(R.id.post_description);
         addToCartButton = findViewById(R.id.btn_addToCart);
-        alreadyAddedCartButton = findViewById(R.id.btn_item_added_to_cart);
         cartButton = findViewById(R.id.btn_cart);
         backButton = findViewById(R.id.btn_back_post);
 
@@ -92,7 +92,18 @@ public class Post extends AppCompatActivity {
         myFormat.setGroupingUsed(true); // this will also round numbers, 3
 
         price.setText("Rs. "+ myFormat.format(post.getPrice()));
-        quantity.setText("Items Available: "+Integer.toString(post.getQuantity()));
+
+        if(post.getQuantity() == 0){
+            quantity.setText("Out of Stock");
+            quantity.setTextColor(getResources().getColor(R.color.warningColor));
+            quantity.setTypeface(quantity.getTypeface(), Typeface.BOLD);
+            quantity.setTextSize(16);
+            deliveryTime.setVisibility(View.GONE);
+            addToCartButton.setEnabled(false);
+        }
+        else
+            quantity.setText("Items Available: "+Integer.toString(post.getQuantity()));
+
         deliveryTime.setText("Delivery Time: "+post.getDeliveryTime() +" days");
 
         if(!post.getDescription().equals(""))
@@ -209,8 +220,8 @@ public class Post extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
 
                     if(task.isSuccessful()){
-                        alreadyAddedCartButton.setVisibility(View.VISIBLE);
-                        addToCartButton.setVisibility(View.GONE);
+                        addToCartButton.setText("Item Added to Cart");
+                        addToCartButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_black_24dp, 0, 0, 0);
                         progressDialog.dismiss();
                     }
                 }});
@@ -249,8 +260,8 @@ public class Post extends AppCompatActivity {
 
                 if(cart != null){
                     if(cart.findPost(post)){
-                        alreadyAddedCartButton.setVisibility(View.VISIBLE);
-                        addToCartButton.setVisibility(View.GONE);
+                        addToCartButton.setText("Item Added to Cart");
+                        addToCartButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_black_24dp, 0, 0, 0);
                     }
                 }
 

@@ -121,18 +121,14 @@
             android:id="@+id/item_cart_total_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-
             android:layout_gravity="center"
-
             android:layout_margin="16dp"
             android:fontFamily="@font/roboto"
             android:gravity="right"
-            android:text="Rs. 850"
-            android:textColor="@color/colorPrimary"
+            android:text="Rs. 0"
+            android:textColor="@color/customBlue2"
             android:textFontWeight="100"
             android:textSize="18sp"
-
             android:textStyle="bold"
 
 

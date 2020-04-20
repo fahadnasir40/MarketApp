@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fillViewport="true"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.Order">
+
+        <androidx.appcompat.widget.Toolbar
+
+            android:id="@+id/orders_details_toolbar"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/toolbar_title_order_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Orders Details"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="18sp"
+                    android:textFontWeight="200"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/btn_back_orders_details"/>
+
+
+                <Button
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/btn_back_orders_details"
+                    android:padding="32dp"
+                    android:background="@drawable/ic_arrow_back_black_24dp"
+                    />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <TextView
+            android:id="@+id/order_details_tv_order_no"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Number  "
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto"
+            android:layout_below="@id/orders_details_toolbar"
+
+            />
+
+
+        <TextView
+            android:id="@+id/order_details_tv_order_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Placed on date"
+            android:textSize="14sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/roboto"
+            android:layout_below="@id/order_details_tv_order_no"
+            />
+
+
+        <TextView
+            android:id="@+id/order_details_item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orders_details_toolbar"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/colorPrimary"
+            android:textFontWeight="200"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status_title"
+            android:text="Status:  "
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textFontWeight="100"
+            android:textStyle="bold"
+            android:layout_below="@id/order_details_tv_order_date"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status"
+            android:layout_below="@id/order_details_tv_order_date"
+            android:layout_toEndOf="@id/item_order_details_status_title"
+
+            android:text="Order Status "
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status_note_title"
+            android:layout_below="@id/item_order_details_status"
+
+            android:text="Note from Seller:  "
+            android:textStyle="bold"
+            android:textColor="@color/warningColor"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_order_details_status_note"
+            android:layout_below="@id/item_order_details_status"
+            android:layout_toEndOf="@id/item_order_details_status_note_title"
+            android:text="Note details"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:fontFamily="@font/roboto"/>
+
+        <View
+            android:id="@+id/oder_details_bar"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/LightGrey"
+            android:layout_below="@id/order_details_shipping_address"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_orders_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/oder_details_bar"
+            android:layout_margin="8dp"
+            />
+
+
+        <TextView
+            android:id="@+id/order_details_shipping_address_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto"
+            android:text="Shipping Address: "
+            android:layout_below="@id/item_order_details_status_note"
+
+            />
+
+        <TextView
+            android:id="@+id/order_details_shipping_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto"
+            android:layout_toEndOf="@id/order_details_shipping_address_title"
+            android:text="Address "
+            android:layout_below="@id/item_order_details_status_note"
+
+            />
+
+    </RelativeLayout>
+
+
+
+</ScrollView>

@@ -1,10 +1,4 @@
-package com.devfn.mart.activities;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.devfn.seller.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -15,11 +9,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.devfn.common.model.CartItem;
 import com.devfn.common.model.OrderModel;
 import com.devfn.common.model.PostItem;
-import com.devfn.mart.R;
-import com.devfn.mart.adapters.OrderDetailsAdapter;
+import com.devfn.seller.R;
+import com.devfn.seller.adapters.OrderDetailsAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +41,7 @@ public class OrderDetails extends AppCompatActivity {
     private Button backButton;
     private OrderDetailsAdapter orderDetailsAdapter;
     private DatabaseReference databaseReference,orderReference;
-    private TextView orderNo,totalPrice,shippingAddress,dateOrdered,cancelOrder,orderStatus,noteTitle,noteDetails;
+    private TextView orderNo,totalPrice,shippingAddress,dateOrdered,orderStatus,noteTitle,noteDetails;
     private List<PostItem> postsList;
     private List<CartItem> cartItemList;
     private OrderModel order;
@@ -71,51 +71,64 @@ public class OrderDetails extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.rv_orders_details);
         backButton = findViewById(R.id.btn_back_orders_details);
-        cancelOrder = findViewById(R.id.order_details_cancel_order);
-
         postsList = new ArrayList<>();
         cartItemList = new ArrayList<>();
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
         progressDialog = new ProgressDialog(this);
+        orderDetailsAdapter = new OrderDetailsAdapter(postsList,cartItemList,this);
 
         Intent intent = this.getIntent();
-        Bundle bundle = intent.getExtras();
-        order = (OrderModel) bundle.getSerializable("order_object_details");
 
-        if(order!=null){
-            setOrderDetails();
-            if(order.getOrderStatus().equals("Cancelled"))
-                cancelOrder.setVisibility(View.GONE);
+        String orderId = intent.getStringExtra("order_id");
+        String orderUserId = intent.getStringExtra("order_userId");
+
+        if(orderId != null){
+            databaseReference = FirebaseDatabase.getInstance().getReference("posts");
+
+            orderReference = FirebaseDatabase.getInstance().getReference("orders");
+
+            getOrderDetails(orderId, orderUserId);
+            readPostData();
 
         }
 
 
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        orderDetailsAdapter = new OrderDetailsAdapter(postsList,cartItemList,this);
-
+//        orderDetailsAdapter = new OrderDetailsAdapter(postsList,cartItemList,this);
+//
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent1 = new Intent(OrderDetails.this,Order.class);
+                Intent intent1 = new Intent(OrderDetails.this,Orders.class);
                 startActivity(intent1);
                 finish();
             }
         });
 
-        cancelOrder.setOnClickListener(new View.OnClickListener() {
+
+
+    }
+
+    private void getOrderDetails(String orderId,String userId) {
+
+        orderReference = FirebaseDatabase.getInstance().getReference("orders");
+        orderReference.child(userId).child(orderId).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                showDialog();
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                     order = (OrderModel) dataSnapshot.getValue(OrderModel.class);
+                     if(order != null){
+                         readPostData();
+                         setOrderDetails();
+                     }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(OrderDetails.this,"Error reading data",Toast.LENGTH_SHORT).show();
             }
         });
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("posts");
-        orderReference = FirebaseDatabase.getInstance().getReference("orders");
-
-        readPostData();
     }
 
 
@@ -138,36 +151,40 @@ public class OrderDetails extends AppCompatActivity {
 
     }
 
-    void readPostData(){
+    void readPostData() {
 
         cartItemList.clear();
         postsList.clear();
-        recyclerView.setAdapter(orderDetailsAdapter);
 
-        if(order!=null){
+        if (order != null) {
 
             Collection<CartItem> items = order.getItems().values();
             cartItemList.addAll(items);
-
-            for(CartItem cartItem:cartItemList){
-                databaseReference.child(cartItem.getPostId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            recyclerView.setAdapter(orderDetailsAdapter);
+            for (CartItem cartItem : cartItemList) {
+                String postId = cartItem.getPostId();
+                databaseReference.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            PostItem postItem = dataSnapshot.getValue(PostItem.class);
-                            postsList.add(postItem);
-                            orderDetailsAdapter.notifyDataSetChanged();
+
+                        PostItem postItem = dataSnapshot.getValue(PostItem.class);
+                        postsList.add(postItem);
+
+
+                        orderDetailsAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
+
                 });
+
+
             }
 
-
         }
-
     }
 
     private void showDialog() {
@@ -183,7 +200,6 @@ public class OrderDetails extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing but close the dialog
                 dialog.dismiss();
-                cancelOrderInDb();
 
             }
         });
@@ -201,55 +217,6 @@ public class OrderDetails extends AppCompatActivity {
         alert.show();
     }
 
-    private void cancelOrderInDb() {
-
-        progressDialog.setMessage("Cancelling Order. Please wait.");
-        progressDialog.show();
-
-        if(order.getOrderStatus().equals("Pending")){
-            order.setOrderStatus("Cancelled");
-            orderReference.child(FirebaseAuth.getInstance().getUid()).child(order.getOrderId()).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-
-                        Collection<CartItem> items = order.getItems().values();
-                        List<CartItem> cartList = new ArrayList<>(items);
-
-                        for(final CartItem cartItem:cartItemList){
-                            databaseReference.child(cartItem.getPostId()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    PostItem postItem = dataSnapshot.getValue(PostItem.class);
-                                    if(postItem!=null){
-                                        postItem.setQuantity(postItem.getQuantity() + cartItem.getQuantityOrdered());
-                                        databaseReference.child(cartItem.getPostId()).setValue(postItem);
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Toast.makeText(getApplicationContext(),databaseError.getMessage(),Toast.LENGTH_SHORT).show();
-                                    progressDialog.dismiss();
-                                }
-                            });
-                        }
-
-
-                    Intent intent = new Intent(OrderDetails.this,Order.class);
-                    Toast.makeText(getApplicationContext(),"Order Cancelled",Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                    startActivity(intent);
-                    finish();
-                    }
-                    else{
-                        progressDialog.dismiss();
-                    }
-
-                }
-            });
-        }
-
-    }
 
 
     String getFormattedNumber(int number){

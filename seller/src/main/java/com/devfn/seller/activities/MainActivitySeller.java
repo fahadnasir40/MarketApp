@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.devfn.common.model.PostItem;
 import com.devfn.seller.R;
 import com.devfn.seller.adapters.ItemAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +29,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +80,55 @@ public class MainActivitySeller extends AppCompatActivity {
         recyclerView = findViewById(R.id.home_items_list);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         databaseReference = FirebaseDatabase.getInstance().getReference("posts");
+        checkSessionInfo();
         readAllPosts();
 
 
     }
+
+    void checkSessionInfo(){
+
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                return;
+                            }
+                            // Get new Instance ID token
+                            final String currentToken = task.getResult().getToken();
+
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                            String uid = FirebaseAuth.getInstance().getUid();
+                            ref.child(uid).child("device_token").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()){
+                                        String token = dataSnapshot.getValue(String.class);
+                                        if(!currentToken.equals(token)){
+                                            Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
+                                            logout(true);
+                                        }
+                                    }
+                                    else if(FirebaseAuth.getInstance().getUid() != null){
+                                        Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
+                                        logout(true);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    });
+        }
+
+    }
+
 
 
     void readAllPosts(){
@@ -167,7 +217,7 @@ public class MainActivitySeller extends AppCompatActivity {
         switch (item.getItemId()){
 
             case R.id.menu_log_out:
-                logout();
+                logout(false);
                 return true;
 
             default:
@@ -175,12 +225,16 @@ public class MainActivitySeller extends AppCompatActivity {
         }
     }
 
-    private void logout() {
+    private void logout(boolean sessionExpired){
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        String uid = FirebaseAuth.getInstance().getUid();
-        ref.child(uid).child("device_token").removeValue();
+        if(!sessionExpired){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+            String uid = FirebaseAuth.getInstance().getUid();
+            ref.child(uid).child("device_token").removeValue();
+        }
+
+        databaseReference.removeEventListener(childEventListener);
 
         FirebaseAuth.getInstance().signOut();
 

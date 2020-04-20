@@ -62,6 +62,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PostViewHolder
 
         holder.price.setText("Rs. "+ myFormat.format(PostItems.get(position).getPrice()));
 
+        if(PostItems.get(position).getQuantity() == 0){
+            holder.qty.setVisibility(View.VISIBLE);
+        }
+        else{
+            if(holder.qty.getVisibility() == View.VISIBLE)
+                holder.qty.setVisibility(View.GONE);
+        }
+
 
         holder.setItemClickListener(new ItemClickListener() {
 
@@ -88,7 +96,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PostViewHolder
 
         private ImageView image;
         private TextView name;
-        private TextView price;
+        private TextView price,qty;
         ItemClickListener itemClickListener;
 
 
@@ -98,7 +106,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PostViewHolder
             image =  itemView.findViewById(R.id.item_img);
             name =  itemView.findViewById(R.id.item_name);
             price =  itemView.findViewById(R.id.item_price);
-
+            qty = itemView.findViewById(R.id.item_not_in_stock);
             itemView.setOnClickListener(this);
         }
 
