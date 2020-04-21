@@ -207,8 +207,8 @@ public class Post extends AppCompatActivity {
             cart.addItems(cartItem);
             cart.setTotalOrderPrice(cart.getTotalOrderPrice() + post.getPrice());
 
-
-            databaseReference.child(FirebaseAuth.getInstance().getUid()).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
+            String uid = FirebaseAuth.getInstance().getUid();
+            databaseReference.child(uid).child(cart.getOrderNo()).setValue(cart).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(Post.this,e.getMessage(),Toast.LENGTH_SHORT).show();

@@ -12,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.Notification"></activity>
+        <activity android:name=".activities.Chat"></activity>
+        <activity android:name=".activities.Messages" />
+        <activity android:name=".activities.Notification" />
         <activity android:name=".activities.EditProfile" />
         <activity android:name=".activities.UserProfile" />
         <activity android:name=".activities.OrderDetails" />
@@ -42,6 +44,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/rts_logo" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

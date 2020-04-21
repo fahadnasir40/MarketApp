@@ -8,6 +8,7 @@
     <color name="colorAccent">#3385c6</color>
     <color name="customBlue">#0467DC</color>
     <color name="customBlue2">#FC3387EA</color>
+    <color name="customCursorColor">#3C3C3C</color>
     <color name="blackColor">#2B2B2B</color>
     <color name="whiteColor">#FDFDFE</color>
     <color name="grayColor">#DBD9D9</color>

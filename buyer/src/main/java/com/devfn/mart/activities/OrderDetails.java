@@ -132,7 +132,7 @@ public class OrderDetails extends AppCompatActivity {
 
         orderNo.setText("Order No. "+ order.getOrderNo());
         totalPrice.setText("Rs. "+ getFormattedNumber(order.getTotalOrderPrice()));
-        dateOrdered.setText("Placed on " + order.getOrderDate());
+        dateOrdered.setText("Placed on " + order.getDateFromTimeStamp());
         shippingAddress.setText(order.getDeliveryAddress()+" - "+ order.getDeliveryCity() +" - "+order.getDeliveryPostalCode()+"\n");
         orderStatus.setText(order.getOrderStatus());
 

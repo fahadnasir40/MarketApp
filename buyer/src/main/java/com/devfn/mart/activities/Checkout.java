@@ -34,6 +34,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Random;
 
+import static android.os.SystemClock.setCurrentTimeMillis;
+
 public class Checkout extends AppCompatActivity {
 
     //TODO Remove total quantity from posts
@@ -171,11 +173,10 @@ public class Checkout extends AppCompatActivity {
                 orderModel.setOrderId(orderNo);
                 orderModel.setOrderNo("M-LHR-"+String.valueOf(newOrderNumber));
 
-                Calendar c = Calendar.getInstance();
-                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
-                String formattedDate = df.format(c.getTime());
 
-                orderModel.setOrderDate(formattedDate);
+                long timeStampDate = System.currentTimeMillis();
+                String ts = String.valueOf(timeStampDate);
+                orderModel.setOrderDate(ts);
                 orderModel.setOrderStatus("Pending");
                 Collection<CartItem> cartItems = orderModel.getItems().values();
 
@@ -271,7 +272,7 @@ public class Checkout extends AppCompatActivity {
         newNotification.setType("newOrder");
         newNotification.setOrderId(orderModel.getOrderId());
         newNotification.setUserId(currentUser.getUserId());
-        newNotification.setDate(orderModel.getOrderDate());
+//        newNotification.setDate(orderModel.getOrderDate());
 
         notificationReference.child(currentUser.getUserId()).child(nId).setValue(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

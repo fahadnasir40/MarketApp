@@ -42,7 +42,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.PostViewHold
 
 
         holder.orderNumber.setText("Order No. "+ordersList.get(position).getOrderNo());
-        holder.orderDate.setText("Placed on "+ordersList.get(position).getOrderDate());
+        holder.orderDate.setText("Placed on "+ordersList.get(position).getDateFromTimeStamp());
         holder.orderStatus.setText(ordersList.get(position).getOrderStatus());
 
         holder.orderTotalPrice.setText("Rs. "+ getFormattedNumber(ordersList.get(position).getTotalOrderPrice()));

@@ -33,6 +33,12 @@
                 app:showAsAction="never" />
 
             <item
+                android:title="Messages"
+                android:id="@+id/menu_messages"
+                android:icon="@drawable/ic_speak"
+                app:showAsAction="never" />
+
+            <item
                 android:title="Log Out"
                 android:id="@+id/menu_log_out"
                 android:icon="@drawable/ic_logout"

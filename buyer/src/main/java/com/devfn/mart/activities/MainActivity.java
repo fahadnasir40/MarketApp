@@ -226,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(MainActivity.this,UserProfile.class);
                 startActivity(intent1);
                 return true;
+            case R.id.menu_messages:
+                Intent intent3 = new Intent(MainActivity.this,Messages.class);
+                startActivity(intent3);
+                return true;
             case R.id.menu_notifications:
                 Intent intent2 = new Intent(MainActivity.this, Notification.class);
                 startActivity(intent2);
