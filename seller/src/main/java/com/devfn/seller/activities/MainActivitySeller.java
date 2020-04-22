@@ -215,7 +215,10 @@ public class MainActivitySeller extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()){
-
+            case R.id.menu_chats:
+                Intent intent = new Intent(this,Messages.class);
+                startActivity(intent);
+                return true;
             case R.id.menu_log_out:
                 logout(false);
                 return true;

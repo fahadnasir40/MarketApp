@@ -102,7 +102,9 @@ public class OrderModel implements Serializable {
 
         String datePattern = "dd MMM YYYY  HH:mm:ss";
         SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
-        return formatter.format(new Date(Long.parseLong(this.getOrderDate())));
+
+        String date =  formatter.format(new Date(Long.parseLong(this.getOrderDate())));
+        return date;
     }
 
     public String getDeliverUserId() {
@@ -119,6 +121,7 @@ public class OrderModel implements Serializable {
 
     public OrderModel() {
         items = new HashMap<String,CartItem>();
+        this.orderDate = String.valueOf(System.currentTimeMillis());
     }
 
     public void setOrderNo(String orderNo) {

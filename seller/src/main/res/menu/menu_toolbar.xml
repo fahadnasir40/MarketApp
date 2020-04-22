@@ -19,12 +19,12 @@
 <!--                android:icon="@drawable/ic_user"-->
 <!--                />-->
 
-<!--            <item-->
-<!--                android:title="Orders"-->
-<!--                android:id="@+id/menu_orders"-->
-<!--                app:showAsAction="never"-->
-<!--                android:icon="@drawable/ic_order"-->
-<!--                />-->
+            <item
+                android:title="Messages"
+                android:id="@+id/menu_chats"
+                app:showAsAction="never"
+                android:icon="@drawable/ic_speak"
+                />
 
             <item
                 android:title="Log Out"

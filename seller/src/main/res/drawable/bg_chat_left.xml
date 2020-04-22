@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle"
-    android:background="?android:attr/selectableItemBackground"
     >
 
     <corners
@@ -9,5 +8,5 @@
         android:topLeftRadius="0dp"
         />
 
-    <solid android:color="@color/white"/>
+    <solid android:color="#DEE2E6"/>
 </shape>

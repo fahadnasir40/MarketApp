@@ -2,7 +2,9 @@
     android:shape="oval">
     <solid
         android:color="@color/colorPrimary" />
-
+    <stroke
+        android:width="2dip"
+        android:color="#FFF" />
     <padding
         android:left="8dip"
         android:right="8dip"

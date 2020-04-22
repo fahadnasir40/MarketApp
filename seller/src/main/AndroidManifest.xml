@@ -13,6 +13,8 @@
         <activity android:name=".activities.CreatePost" />
         <activity android:name=".activities.PostSeller" />
         <activity android:name=".activities.OrderDetails" />
+        <activity android:name=".activities.Messages" />
+        <activity android:name=".activities.ChatSeller" />
         <activity android:name=".activities.LoginSeller">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +32,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/rts_seller_logo" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

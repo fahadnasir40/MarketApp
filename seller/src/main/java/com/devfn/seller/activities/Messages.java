@@ -1,7 +1,4 @@
-package com.devfn.mart.activities;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.devfn.seller.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,15 +7,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.devfn.common.model.ChatModel;
-import com.devfn.mart.R;
+import com.devfn.seller.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class Messages extends AppCompatActivity {
 
@@ -38,7 +34,7 @@ public class Messages extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading Chat Details. Please wait");
-        //progressDialog.show();
+
         backButton = findViewById(R.id.btn_back_messages);
         message = findViewById(R.id.messages_item);
         chatFound = false;
@@ -47,7 +43,7 @@ public class Messages extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(Messages.this,Chat.class);
+                Intent intent = new Intent(Messages.this, ChatSeller.class);
                 startActivity(intent);
                 finish();
             }
@@ -57,7 +53,7 @@ public class Messages extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Messages.this,MainActivity.class);
+                Intent intent = new Intent(Messages.this,MainActivitySeller.class);
                 startActivity(intent);
                 finish();
             }
