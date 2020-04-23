@@ -64,20 +64,40 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         long previousTs = 0;
         boolean side,change = false;
 
-        if(holder.getItemViewType()==1){
-            side = true;
-        }
-        else
-            side = false;
+        side = holder.getItemViewType() == 1;
 
-
-        if(position < messageList.size()-1){
+        if(position < messageList.size() - 1){
             ChatMessage pm = messageList.get(position+1);
             previousTs = Long.parseLong(pm.getTimeStamp());
             if(side != checkType(position+1))
                 change = true;
         }
+
         setTimeTextVisibility(Long.parseLong(message.getTimeStamp()), previousTs, holder.dateMessage,change);
+
+    }
+
+    private void setTimeTextVisibility(long ts1, long ts2, TextView timeText,boolean change){
+
+
+        Date a = new Timestamp(ts1);
+        Date b = new Timestamp(ts2);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+        timeText.setVisibility(View.GONE);
+        if(change){
+            timeText.setPadding(0,0,0,0);
+            timeText.setTextSize(0);
+            timeText.setVisibility(View.INVISIBLE);
+
+        }
+
+        if(formatter.format(b).compareTo(formatter.format(a)) < 0){
+            timeText.setVisibility(View.VISIBLE);
+            SimpleDateFormat formatter2 = new SimpleDateFormat("d MMM YYYY", Locale.US);
+            timeText.setText(formatter2.format(new Date(ts1)));
+        }
+
     }
 
     String getFormattedNumber(int number){
@@ -128,33 +148,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             contextMenu.setHeaderTitle("Select the Action");
             contextMenu.add(this.getAdapterPosition(), 101, 0, "Copy");
             contextMenu.add(this.getAdapterPosition(), 102, 1, "Delete");
-        }
-    }
-
-
-    private void setTimeTextVisibility(long ts1, long ts2, TextView timeText,boolean change){
-        if(ts2==0){
-            timeText.setVisibility(View.VISIBLE);
-            SimpleDateFormat formatter = new SimpleDateFormat("d MMM  YYYY", Locale.US);
-            timeText.setText(formatter.format(new Date(ts1)));
-        }
-        else {
-            Date a = new Timestamp(ts1);
-            Date b = new Timestamp(ts2);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-
-            if(formatter.format(b).compareTo(formatter.format(a)) == 0)
-                timeText.setVisibility(View.GONE);
-
-            if(change){
-               timeText.setVisibility(View.VISIBLE);
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) timeText.getLayoutParams();
-                lp.setMargins(0,0,0,0);
-                timeText.setLayoutParams(lp);
-                timeText.setText("");
-               timeText.setPadding(0,0,0,0);
-               timeText.setBackground(null);
-            }
         }
     }
 }

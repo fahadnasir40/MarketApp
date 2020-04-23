@@ -75,6 +75,7 @@ public class ChatSeller extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
@@ -118,7 +119,6 @@ public class ChatSeller extends AppCompatActivity {
                 if(!chatModel.getMessageType().equals("Chat-Deleted")){
                     Map<String, ChatMessage> map = chatModel.getMessages();
 
-
                     Collection<ChatMessage> values = map.values();
                     chatList.addAll(values);
 
@@ -128,8 +128,6 @@ public class ChatSeller extends AppCompatActivity {
                             chatList.remove(chatMessage);
                         }
                     }
-
-
                     Collections.sort(chatList, new Comparator<ChatMessage>() {
                         public int compare(ChatMessage o1, ChatMessage o2) {
                             Date a = new Timestamp(Long.parseLong(o1.getTimeStamp()));
@@ -160,13 +158,6 @@ public class ChatSeller extends AppCompatActivity {
                 progressDialog.dismiss();
         }
     };
-
-
-    private void getChatData(Collection<ChatMessage> values) {
-
-
-
-    }
 
 
     @Override

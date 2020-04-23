@@ -1,7 +1,6 @@
 package com.devfn.mart.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devfn.common.model.ChatMessage;
@@ -31,13 +28,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Timestamp;
@@ -46,11 +40,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class Chat extends AppCompatActivity {
 
@@ -64,6 +56,7 @@ public class Chat extends AppCompatActivity {
     private ChatModel chatModel;
     private FirebaseUser user;
     private ProgressDialog progressDialog;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,23 +66,22 @@ public class Chat extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading chat history");
 
-
         user = FirebaseAuth.getInstance().getCurrentUser();
         backButton = findViewById(R.id.btn_back_chat);
         sendButton = findViewById(R.id.btn_chat_send_message);
         editText = findViewById(R.id.chat_message_text);
         recyclerView = findViewById(R.id.rv_chat);
+        chatList = new ArrayList<>();
 
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Chat.this,MainActivity.class);
+                Intent intent = new Intent(Chat.this,Messages.class);
                 startActivity(intent);
                 finish();
             }
@@ -101,19 +93,23 @@ public class Chat extends AppCompatActivity {
                     sendMessage();
              }
         });
-        chatList = new ArrayList<>();
         messageAdapter = new MessageAdapter(chatList,this);
         recyclerView.setAdapter(messageAdapter);
-
         databaseRef = FirebaseDatabase.getInstance().getReference("chats");
         readData();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(Chat.this,Messages.class);
+        startActivity(intent);
+        finish();
     }
 
     private void readData() {
         progressDialog.show();
         databaseRef.child(user.getUid()).addValueEventListener(valueEventListener);
-
     }
 
     private ValueEventListener valueEventListener = new ValueEventListener() {
@@ -126,7 +122,6 @@ public class Chat extends AppCompatActivity {
                 if(!chatModel.getMessageType().equals("Chat-Deleted")){
                     Map<String, ChatMessage> map = chatModel.getMessages();
 
-
                     Collection<ChatMessage> values = map.values();
                     chatList.addAll(values);
 
@@ -136,8 +131,6 @@ public class Chat extends AppCompatActivity {
                             chatList.remove(chatMessage);
                         }
                     }
-
-
                     Collections.sort(chatList, new Comparator<ChatMessage>() {
                         public int compare(ChatMessage o1, ChatMessage o2) {
                             Date a = new Timestamp(Long.parseLong(o1.getTimeStamp()));
@@ -145,11 +138,10 @@ public class Chat extends AppCompatActivity {
                             return b.compareTo(a);
                         }
                     });
-
+                    linearLayoutManager.scrollToPositionWithOffset(0,0);
                 }
                 else{
                     chatList.clear();
-
                 }
             }
             else if(chatModel !=null)
@@ -157,11 +149,8 @@ public class Chat extends AppCompatActivity {
 
             if(progressDialog.isShowing())
                 progressDialog.dismiss();
-
             messageAdapter.notifyDataSetChanged();
         }
-
-
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             if(progressDialog.isShowing())
@@ -169,12 +158,6 @@ public class Chat extends AppCompatActivity {
         }
     };
 
-
-    private void getChatData(Collection<ChatMessage> values) {
-
-
-
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu cMenu, View parent, ContextMenu.ContextMenuInfo info) {
@@ -276,17 +259,10 @@ public class Chat extends AppCompatActivity {
         //5. 3-1        Delivered & Client Deleted
         //6. 3-2        Delivered & Seller Deleted
 
-
         if(chatList.get(position).getStatus().equals("3") || chatList.get(position).getStatus().equals("4") )
          chatReference.child(id).child("messages").child(chatList.get(position).getKey()).child("status").setValue("3-1");
         else if(chatList.get(position).getStatus().equals("3-2") )
             chatReference.child(id).child("messages").child(chatList.get(position).getKey()).removeValue();
     }
 
-    private void deleteAllMessages(){
-
-        DatabaseReference deleteRef = FirebaseDatabase.getInstance().getReference("chats");
-        deleteRef.child(user.getUid()).child("messageType").setValue("Chat-Deleted");
-
-    }
 }
