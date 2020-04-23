@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.devfn.common.model.ChatMessage;
@@ -27,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder>{
@@ -66,12 +69,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         holder.messageTime.setText(message.getDateFromTimeStamp("h:mm a"));
 
         long previousTs = 0;
+        boolean side,change = false;
+
+        if(holder.getItemViewType()==1){
+            side = true;
+        }
+        else
+            side = false;
+
+
         if(position < messageList.size()-1){
             ChatMessage pm = messageList.get(position+1);
             previousTs = Long.parseLong(pm.getTimeStamp());
+            if(side != checkType(position+1))
+                change = true;
         }
-
-        setTimeTextVisibility(Long.parseLong(message.getTimeStamp()), previousTs, holder.dateMessage,position);
+        setTimeTextVisibility(Long.parseLong(message.getTimeStamp()), previousTs, holder.dateMessage,change);
     }
 
     String getFormattedNumber(int number){
@@ -83,12 +96,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
 
-            if(messageList.get(position).getChatId().equals(firebaseUser.getUid())){
-                return  MSG_TYPE_RIGHT;
-            }
-            else{
-                return  MSG_TYPE_LEFT;
-            }
+        if(checkType(position))
+            return  MSG_TYPE_RIGHT;
+        else
+            return  MSG_TYPE_LEFT;
+    }
+
+    boolean checkType(int position){
+        if(messageList.get(position).getChatId().equals(firebaseUser.getUid()))
+            return true;
+        return false;
     }
 
     @Override
@@ -100,65 +117,51 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         private TextView showMessage,messageTime;
         private TextView dateMessage;
-
+        private ConstraintLayout container;
 
         ViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-           dateMessage = itemView.findViewById(R.id.chat_date);
-
+            dateMessage = itemView.findViewById(R.id.chat_date);
             showMessage = itemView.findViewById(R.id.chat_show_message);
             messageTime = itemView.findViewById(R.id.chat_time);
-            showMessage.setOnCreateContextMenuListener(this);
+            container = itemView.findViewById(R.id.chat_container);
+
+            container.setOnCreateContextMenuListener(this);
         }
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-
             contextMenu.setHeaderTitle("Select the Action");
-
             contextMenu.add(this.getAdapterPosition(), 101, 0, "Copy");
             contextMenu.add(this.getAdapterPosition(), 102, 1, "Delete");
         }
     }
 
-    private void setTimeTextVisibility(long ts1, long ts2, TextView timeText,int position){
 
+    private void setTimeTextVisibility(long ts1, long ts2, TextView timeText,boolean change){
         if(ts2==0){
             timeText.setVisibility(View.VISIBLE);
-            SimpleDateFormat formatter = new SimpleDateFormat("d MMM YYYY");
-            String date = formatter.format(new Date(ts1));
-            timeText.setText(date);
-        }else {
-
+            SimpleDateFormat formatter = new SimpleDateFormat("d MMMM  YYYY", Locale.US);
+            timeText.setText(formatter.format(new Date(ts1)));
+        }
+        else {
             Date a = new Timestamp(ts1);
             Date b = new Timestamp(ts2);
-
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-            if(formatter.format(b).compareTo(formatter.format(a)) == 0){
+            if(formatter.format(b).compareTo(formatter.format(a)) == 0)
                 timeText.setVisibility(View.GONE);
-            }
 
-//
-//            Calendar cal1 = Calendar.getInstance();
-//            Calendar cal2 = Calendar.getInstance();
-//            cal1.setTimeInMillis(ts1);
-//            cal2.setTimeInMillis(ts2);
-//
-//            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-//                    cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)  && cal1.get(Calendar.DATE)==cal2.get(Calendar.DATE);
-//
-//            if(sameMonth){
-//                timeText.setVisibility(View.GONE);
-//                timeText.setText("");
-//            }else {
-//                timeText.setVisibility(View.VISIBLE);
-//                SimpleDateFormat formatter = new SimpleDateFormat("d MMM YYYY");
-//                 String date = formatter.format(new Date(ts2));
-//                timeText.setText(date);
-//            }
+            if(change){
+               timeText.setVisibility(View.VISIBLE);
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) timeText.getLayoutParams();
+                lp.setMargins(0,0,0,0);
+                timeText.setLayoutParams(lp);
+                timeText.setText("");
+               timeText.setPadding(0,0,0,0);
+               timeText.setBackground(null);
+            }
         }
     }
-
 }

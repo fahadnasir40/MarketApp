@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -38,11 +40,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class ChatSeller extends AppCompatActivity {
 
@@ -81,7 +81,7 @@ public class ChatSeller extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChatSeller.this,MainActivitySeller.class);
+                Intent intent = new Intent(ChatSeller.this,Messages.class);
                 startActivity(intent);
                 finish();
             }
@@ -104,17 +104,32 @@ public class ChatSeller extends AppCompatActivity {
 
     private void readData() {
         progressDialog.show();
-        databaseRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                chatList.clear();
-                if(dataSnapshot.exists()){
-                    chatModel = dataSnapshot.getValue(ChatModel.class);
+        databaseRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").addValueEventListener(valueEventListener);
 
+    }
+
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            chatList.clear();
+            if(dataSnapshot.exists()){
+                chatModel = dataSnapshot.getValue(ChatModel.class);
+
+                if(!chatModel.getMessageType().equals("Chat-Deleted")){
                     Map<String, ChatMessage> map = chatModel.getMessages();
-                    Collection<ChatMessage> values = map.values();
 
+
+                    Collection<ChatMessage> values = map.values();
                     chatList.addAll(values);
+
+                    for(ChatMessage chatMessage:new ArrayList<>(chatList)){
+                        if(chatMessage.getStatus().equals("3-2"))
+                        {
+                            chatList.remove(chatMessage);
+                        }
+                    }
+
+
                     Collections.sort(chatList, new Comparator<ChatMessage>() {
                         public int compare(ChatMessage o1, ChatMessage o2) {
                             Date a = new Timestamp(Long.parseLong(o1.getTimeStamp()));
@@ -122,27 +137,32 @@ public class ChatSeller extends AppCompatActivity {
                             return b.compareTo(a);
                         }
                     });
+
                 }
-                else if(chatModel !=null)
-                    chatModel = null;
+                else{
+                    chatList.clear();
 
-                if(progressDialog.isShowing())
-                    progressDialog.dismiss();
-
-                messageAdapter.notifyDataSetChanged();
+                }
             }
+            else if(chatModel !=null)
+                chatModel = null;
 
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-              if(progressDialog.isShowing())
+            if(progressDialog.isShowing())
                 progressDialog.dismiss();
-            }
-        });
-    }
 
-    private void setChatTitle() {
+            messageAdapter.notifyDataSetChanged();
+        }
 
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            if(progressDialog.isShowing())
+                progressDialog.dismiss();
+        }
+    };
+
+
+    private void getChatData(Collection<ChatMessage> values) {
 
 
 
@@ -158,7 +178,7 @@ public class ChatSeller extends AppCompatActivity {
 
     private void sendMessage() {
 
-        final String message = editText.getText().toString();
+        final String message = editText.getText().toString().trim();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("chats");
 
         if(!message.equals("")){
@@ -166,7 +186,7 @@ public class ChatSeller extends AppCompatActivity {
             if(chatModel == null){
                 String key = ref.child(user.getUid()).push().getKey();
                 chatModel = new ChatModel(key,user.getUid(),"1",user.getDisplayName());
-                ref.child(user.getUid()).setValue(chatModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                ref.child("gNyg95WXHkefQjracnwVj1yHfhm2").setValue(chatModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         writeMessageInDB(message);
@@ -176,43 +196,34 @@ public class ChatSeller extends AppCompatActivity {
             else{
                 writeMessageInDB(message);
             }
-
         }
 
     }
 
     private void writeMessageInDB(String message) {
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats");
-        final String key = chatRef.child(user.getUid()).child("messages").push().getKey();
-        Map<String,ChatMessage> map = new LinkedHashMap<>();
+        final String key = chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").push().getKey();
+        final Map<String,ChatMessage> map = new LinkedHashMap<>();
 
-        ChatMessage chatMessage = new ChatMessage();
+        final ChatMessage chatMessage = new ChatMessage();
         chatMessage.setMessage(message);
         chatMessage.setTimeStamp(String.valueOf(System.currentTimeMillis()));
-        chatMessage.setStatus("1");
+        chatMessage.setStatus("4");
 
         chatMessage.setChatId(user.getUid());
         chatMessage.setKey(key);
 
         map.put(key,chatMessage);
         editText.setText("");
+
         chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).setValue(map.get(key)).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    final DatabaseReference newRef = FirebaseDatabase.getInstance().getReference("chats");
-                    newRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("status").setValue("Sent").addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                newRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("timeStamp").setValue(String.valueOf(System.currentTimeMillis()));
-
-                            }
-                        }
-                    });
+                    chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("status").setValue("3");
+                    chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("timeStamp").setValue(String.valueOf(System.currentTimeMillis()));
                 }
-                else
-                {
+                if(task.isCanceled()){
                     Toast.makeText(ChatSeller.this,"Error Sending the message",Toast.LENGTH_SHORT).show();
                 }
 
@@ -241,11 +252,22 @@ public class ChatSeller extends AppCompatActivity {
     }
 
     private void deleteMessage(final int position) {
-        Toast.makeText(getApplicationContext(), chatList.get(position).getKey(), Toast.LENGTH_SHORT).show();
-        DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference("chats");
-        String id = user.getUid();
 
-        chatReference.child(id).child("messages").child(chatList.get(position).getKey()).removeValue();
+        DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference("chats");
+        String id = "gNyg95WXHkefQjracnwVj1yHfhm2";
+
+        //1. Delete Client
+        //2. Delete Seller
+        //3. Delivered
+        //4. Seen
+        //5. 3-1        Delivered & Client Deleted
+        //6. 3-2        Delivered & Seller Deleted
+
+
+        if(chatList.get(position).getStatus().equals("3") || chatList.get(position).getStatus().equals("4") )
+         chatReference.child(id).child("messages").child(chatList.get(position).getKey()).child("status").setValue("3-2");
+        else if(chatList.get(position).getStatus().equals("3-1") )
+            chatReference.child(id).child("messages").child(chatList.get(position).getKey()).removeValue();
     }
 
 }

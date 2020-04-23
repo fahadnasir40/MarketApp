@@ -255,8 +255,8 @@ public class Chat extends AppCompatActivity {
                     clipboard.setPrimaryClip(clip);
                 return true;
             case 102:
-                    deleteAllMessages();
-//                deleteMessage(item.getGroupId());
+                  //  deleteAllMessages();
+                deleteMessage(item.getGroupId());
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -272,21 +272,21 @@ public class Chat extends AppCompatActivity {
         //1. Delete Client
         //2. Delete Seller
         //3. Delivered
-        //5. Seen
-        //6. 3-1
-        //7. 3-2
-        //8. 4-1
+        //4. Seen
+        //5. 3-1        Delivered & Client Deleted
+        //6. 3-2        Delivered & Seller Deleted
+
 
         if(chatList.get(position).getStatus().equals("3") || chatList.get(position).getStatus().equals("4") )
          chatReference.child(id).child("messages").child(chatList.get(position).getKey()).child("status").setValue("3-1");
+        else if(chatList.get(position).getStatus().equals("3-2") )
+            chatReference.child(id).child("messages").child(chatList.get(position).getKey()).removeValue();
     }
 
     private void deleteAllMessages(){
 
         DatabaseReference deleteRef = FirebaseDatabase.getInstance().getReference("chats");
         deleteRef.child(user.getUid()).child("messageType").setValue("Chat-Deleted");
-
-
 
     }
 }

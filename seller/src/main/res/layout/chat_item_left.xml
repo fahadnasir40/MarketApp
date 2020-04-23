@@ -1,24 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp" android:layout_height="wrap_content"
-    android:layout_marginBottom="3dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    >
 
 
     <TextView
+
+        android:id="@+id/chat_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:background="@drawable/bg_chat_left"
+        android:fontFamily="@font/roboto"
+        android:background="@drawable/bg_chat_date"
+        android:layout_centerHorizontal="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:text="hello"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:id="@+id/chat_show_message"
-        android:textColor="@color/black"
-        />
+        android:alpha="0.7"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="12sp"/>
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chat_date"
+        android:layout_marginBottom="3dp"
+        >
 
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chat_container"
+            android:background="@drawable/bg_chat_left">
+
+
+            <!--                <ImageView-->
+            <!--                    android:id="@+id/chat_tick"-->
+            <!--                    android:layout_width="10dp"-->
+            <!--                    android:layout_height="10dp"-->
+            <!--                    android:src="@drawable/ic_tick"-->
+            <!--                    android:layout_marginStart="2dp"-->
+            <!--                    android:layout_gravity="center_horizontal|center_vertical"-->
+            <!--                    android:layout_marginBottom="4dp"-->
+            <!--                    android:alpha="0.7"-->
+            <!--                    android:tint="@color/white" />-->
+
+            <TextView
+
+                android:id="@+id/chat_show_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/roboto"
+
+                android:paddingStart="4dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="8dp"
+
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/chat_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constrainedWidth="true"
+                />
+
+            <TextView
+                android:id="@+id/chat_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="2dp"
+                android:alpha="0.8"
+                android:fontFamily="@font/roboto"
+                android:padding="2dp"
+                android:textColor="@color/gray"
+                android:textSize="10sp"
+                android:tint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:layout_conversion_absoluteHeight="15dp"
+                tools:layout_conversion_absoluteWidth="33dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </RelativeLayout>
 </RelativeLayout>

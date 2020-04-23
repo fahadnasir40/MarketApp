@@ -19,7 +19,6 @@
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="20 August 2020"
         android:alpha="0.7"
         android:layout_margin="8dp"
         android:textColor="@color/colorPrimaryDark"
@@ -32,56 +31,61 @@
         android:layout_below="@id/chat_date"
     >
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-
+            android:id="@+id/chat_container"
             android:background="@drawable/bg_chat_right">
 
+
+            <!--                <ImageView-->
+            <!--                    android:id="@+id/chat_tick"-->
+            <!--                    android:layout_width="10dp"-->
+            <!--                    android:layout_height="10dp"-->
+            <!--                    android:src="@drawable/ic_tick"-->
+            <!--                    android:layout_marginStart="2dp"-->
+            <!--                    android:layout_gravity="center_horizontal|center_vertical"-->
+            <!--                    android:layout_marginBottom="4dp"-->
+            <!--                    android:alpha="0.7"-->
+            <!--                    android:tint="@color/white" />-->
 
             <TextView
 
                 android:id="@+id/chat_show_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:fontFamily="@font/roboto"
-                android:paddingStart="8dp"
+                android:paddingStart="4dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="2dp"
+                android:paddingEnd="4dp"
                 android:paddingBottom="8dp"
-                android:text="hello "
                 android:textColor="@color/white"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/chat_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constrainedWidth="true" />
 
+            <TextView
+                android:id="@+id/chat_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/roboto"
+                android:padding="3dp"
+                android:textColor="@color/white"
+                android:alpha="0.7"
+                android:textSize="10sp"
+                android:tint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:layout_conversion_absoluteHeight="15dp"
+                tools:layout_conversion_absoluteWidth="33dp" />
 
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/chat_tick"-->
-<!--                    android:layout_width="10dp"-->
-<!--                    android:layout_height="10dp"-->
-<!--                    android:src="@drawable/ic_tick"-->
-<!--                    android:layout_marginStart="2dp"-->
-<!--                    android:layout_gravity="center_horizontal|center_vertical"-->
-<!--                    android:layout_marginBottom="4dp"-->
-<!--                    android:alpha="0.7"-->
-<!--                    android:tint="@color/white" />-->
-
-                <TextView
-            android:id="@+id/chat_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            android:padding="2dp"
-            android:fontFamily="@font/roboto"
-            android:text="2:23 pm"
-            android:textColor="@color/white"
-            android:textSize="8sp"
-            android:tint="@color/white" />
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>
 
