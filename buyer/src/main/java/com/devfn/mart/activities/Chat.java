@@ -11,8 +11,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +21,7 @@ import android.widget.Toast;
 import com.devfn.common.model.ChatMessage;
 import com.devfn.common.model.ChatModel;
 import com.devfn.mart.R;
-import com.devfn.mart.adapters.MessageAdapter;
+import com.devfn.mart.adapters.ChatAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +46,7 @@ public class Chat extends AppCompatActivity {
 
     private Button backButton;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private ChatAdapter chatAdapter;
     private EditText editText;
     private ImageButton sendButton;
     private List<ChatMessage> chatList;
@@ -93,8 +91,8 @@ public class Chat extends AppCompatActivity {
                     sendMessage();
              }
         });
-        messageAdapter = new MessageAdapter(chatList,this);
-        recyclerView.setAdapter(messageAdapter);
+        chatAdapter = new ChatAdapter(chatList,this);
+        recyclerView.setAdapter(chatAdapter);
         databaseRef = FirebaseDatabase.getInstance().getReference("chats");
         readData();
     }
@@ -149,7 +147,8 @@ public class Chat extends AppCompatActivity {
 
             if(progressDialog.isShowing())
                 progressDialog.dismiss();
-            messageAdapter.notifyDataSetChanged();
+            chatAdapter.notifyDataSetChanged();
+            setSeenReceipts();
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -159,9 +158,39 @@ public class Chat extends AppCompatActivity {
     };
 
 
+    private void setSeenReceipts() {
+        if(chatModel!=null){
+            DatabaseReference seenReference = FirebaseDatabase.getInstance().getReference("chats");
+            for(ChatMessage chatMessage:chatList){
+                if(!chatMessage.getChatId().equals(user.getUid())){
+                    if(!chatMessage.getIsSeen()){
+                        seenReference.child(user.getUid()).child("messages")
+                                .child(chatMessage.getKey()).child("isSeen").setValue(true);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
-    public void onCreateContextMenu(ContextMenu cMenu, View parent, ContextMenu.ContextMenuInfo info) {
-        new MenuInflater(Chat.this).inflate(R.menu.menu_chat, cMenu);
+    protected void onPause() {
+        super.onPause();
+        if(databaseRef!=null && valueEventListener!=null)
+            databaseRef.child(user.getUid()).removeEventListener(valueEventListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(databaseRef!=null && valueEventListener!=null)
+            databaseRef.child(user.getUid()).removeEventListener(valueEventListener);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(databaseRef!=null && valueEventListener!=null)
+            databaseRef.child(user.getUid()).addValueEventListener(valueEventListener);
     }
 
     @Override
@@ -169,6 +198,9 @@ public class Chat extends AppCompatActivity {
         super.onDestroy();
         if(progressDialog.isShowing())
             progressDialog.dismiss();
+
+        if(databaseRef!=null && valueEventListener!=null)
+            databaseRef.child(user.getUid()).removeEventListener(valueEventListener);
     }
 
     private void sendMessage() {

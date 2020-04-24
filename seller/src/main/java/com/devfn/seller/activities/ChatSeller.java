@@ -5,14 +5,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.devfn.common.model.ChatMessage;
 import com.devfn.common.model.ChatModel;
 import com.devfn.seller.R;
-import com.devfn.seller.adapters.MessageAdapter;
+import com.devfn.seller.adapters.ChatAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,14 +50,16 @@ public class ChatSeller extends AppCompatActivity {
 
     private Button backButton;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private ChatAdapter chatAdapter;
     private EditText editText;
     private ImageButton sendButton;
     private List<ChatMessage> chatList;
     private DatabaseReference databaseRef;
     private ChatModel chatModel;
     private FirebaseUser user;
+    private String senderId,senderName;
     private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +75,7 @@ public class ChatSeller extends AppCompatActivity {
         sendButton = findViewById(R.id.btn_chat_send_message);
         editText = findViewById(R.id.chat_message_text);
         recyclerView = findViewById(R.id.rv_chat);
-
+        TextView chatTitle = findViewById(R.id.toolbar_title_chat);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
@@ -95,18 +99,22 @@ public class ChatSeller extends AppCompatActivity {
              }
         });
         chatList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(chatList,this);
-        recyclerView.setAdapter(messageAdapter);
+        chatAdapter = new ChatAdapter(chatList,this);
+        recyclerView.setAdapter(chatAdapter);
 
+        Intent intent = this.getIntent();
+        senderName = intent.getStringExtra("senderName");
+        senderId = intent.getStringExtra("senderId");
+
+        chatTitle.setText(senderName);
         databaseRef = FirebaseDatabase.getInstance().getReference("chats");
-        readData();
+        if(senderId!=null)
+            readData();
 
     }
 
     private void readData() {
-        progressDialog.show();
-        databaseRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").addValueEventListener(valueEventListener);
-
+        databaseRef.child(senderId).addValueEventListener(valueEventListener);
     }
 
     private ValueEventListener valueEventListener = new ValueEventListener() {
@@ -116,7 +124,7 @@ public class ChatSeller extends AppCompatActivity {
             if(dataSnapshot.exists()){
                 chatModel = dataSnapshot.getValue(ChatModel.class);
 
-                if(!chatModel.getMessageType().equals("Chat-Deleted")){
+                if(chatModel !=null){
                     Map<String, ChatMessage> map = chatModel.getMessages();
 
                     Collection<ChatMessage> values = map.values();
@@ -139,7 +147,6 @@ public class ChatSeller extends AppCompatActivity {
                 }
                 else{
                     chatList.clear();
-
                 }
             }
             else if(chatModel !=null)
@@ -148,7 +155,8 @@ public class ChatSeller extends AppCompatActivity {
             if(progressDialog.isShowing())
                 progressDialog.dismiss();
 
-            messageAdapter.notifyDataSetChanged();
+            chatAdapter.notifyDataSetChanged();
+            setSeenReceipts();
         }
 
 
@@ -160,11 +168,36 @@ public class ChatSeller extends AppCompatActivity {
     };
 
 
+    private void setSeenReceipts() {
+        if(chatModel !=null){
+            DatabaseReference seenReference = FirebaseDatabase.getInstance().getReference("chats");
+            for(ChatMessage chatMessage:chatList){
+                if(!chatMessage.getChatId().equals(user.getUid())){
+                    if(!chatMessage.getIsSeen()){
+                        seenReference.child(senderId).child("messages")
+                                .child(chatMessage.getKey()).child("isSeen").setValue(true);
+                    }
+                }
+            }
+        }
+    }
+
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if(progressDialog.isShowing())
             progressDialog.dismiss();
+        if(senderId!=null)
+            databaseRef.child(senderId).removeEventListener(valueEventListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(senderId!=null)
+            databaseRef.child(senderId).removeEventListener(valueEventListener);
     }
 
     private void sendMessage() {
@@ -176,8 +209,8 @@ public class ChatSeller extends AppCompatActivity {
 
             if(chatModel == null){
                 String key = ref.child(user.getUid()).push().getKey();
-                chatModel = new ChatModel(key,user.getUid(),"1",user.getDisplayName());
-                ref.child("gNyg95WXHkefQjracnwVj1yHfhm2").setValue(chatModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                chatModel = new ChatModel(key,user.getUid(),"2",user.getDisplayName());
+                ref.child(senderId).setValue(chatModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         writeMessageInDB(message);
@@ -188,12 +221,26 @@ public class ChatSeller extends AppCompatActivity {
                 writeMessageInDB(message);
             }
         }
+    }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(databaseRef!=null && senderId!=null)
+            databaseRef.child(senderId).addValueEventListener(valueEventListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(senderId != null )
+            databaseRef.child(senderId).removeEventListener(valueEventListener);
     }
 
     private void writeMessageInDB(String message) {
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats");
-        final String key = chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").push().getKey();
+        final String key = chatRef.child(senderId).child("messages").push().getKey();
         final Map<String,ChatMessage> map = new LinkedHashMap<>();
 
         final ChatMessage chatMessage = new ChatMessage();
@@ -207,12 +254,12 @@ public class ChatSeller extends AppCompatActivity {
         map.put(key,chatMessage);
         editText.setText("");
 
-        chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).setValue(map.get(key)).addOnCompleteListener(new OnCompleteListener<Void>() {
+        chatRef.child(senderId).child("messages").child(key).setValue(map.get(key)).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("status").setValue("3");
-                    chatRef.child("gNyg95WXHkefQjracnwVj1yHfhm2").child("messages").child(key).child("timeStamp").setValue(String.valueOf(System.currentTimeMillis()));
+                    chatRef.child(senderId).child("messages").child(key).child("status").setValue("3");
+                    chatRef.child(senderId).child("messages").child(key).child("timeStamp").setValue(String.valueOf(System.currentTimeMillis()));
                 }
                 if(task.isCanceled()){
                     Toast.makeText(ChatSeller.this,"Error Sending the message",Toast.LENGTH_SHORT).show();
@@ -245,7 +292,6 @@ public class ChatSeller extends AppCompatActivity {
     private void deleteMessage(final int position) {
 
         DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference("chats");
-        String id = "gNyg95WXHkefQjracnwVj1yHfhm2";
 
         //1. Delete Client
         //2. Delete Seller
@@ -254,11 +300,10 @@ public class ChatSeller extends AppCompatActivity {
         //5. 3-1        Delivered & Client Deleted
         //6. 3-2        Delivered & Seller Deleted
 
-
         if(chatList.get(position).getStatus().equals("3") || chatList.get(position).getStatus().equals("4") )
-         chatReference.child(id).child("messages").child(chatList.get(position).getKey()).child("status").setValue("3-2");
+         chatReference.child(senderId).child("messages").child(chatList.get(position).getKey()).child("status").setValue("3-2");
         else if(chatList.get(position).getStatus().equals("3-1") )
-            chatReference.child(id).child("messages").child(chatList.get(position).getKey()).removeValue();
+            chatReference.child(senderId).child("messages").child(chatList.get(position).getKey()).removeValue();
     }
 
 }

@@ -6,6 +6,6 @@
     <padding
         android:left="8dip"
         android:right="8dip"
-        android:top="8dip"
-        android:bottom="8dip" />
+        android:top="6dip"
+        android:bottom="6dip" />
 </shape>

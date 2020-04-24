@@ -1,13 +1,23 @@
 package com.devfn.common.model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ChatMessage {
+public class ChatMessage implements Serializable {
 
     private String chatId,key;
     private String message,status;
     private String timeStamp;
+    private boolean isSeen;
+
+    public boolean getIsSeen() {
+        return isSeen;
+    }
+
+    public void setIsSeen(boolean isSeen) {
+        this.isSeen = isSeen;
+    }
 
     public String getKey() {
         return key;
@@ -45,6 +55,7 @@ public class ChatMessage {
 
     public ChatMessage() {
         chatId = "";
+        isSeen = false;
     }
 
     public String getTimeStamp() {
@@ -62,11 +73,12 @@ public class ChatMessage {
         return formatter.format(new Date(Long.parseLong(this.getTimeStamp())));
     }
 
-    public ChatMessage(String chatId, String key,String message, String status, String timeStamp) {
+    public ChatMessage(String chatId, String key,String message, String status, String timeStamp,boolean isSeen) {
         this.key = key;
         this.chatId = chatId;
         this.message = message;
         this.status = status;
+        this.isSeen = isSeen;
         this.timeStamp = timeStamp;
     }
 }

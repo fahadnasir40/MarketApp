@@ -2,7 +2,6 @@ package com.devfn.common.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class ChatModel {
 
@@ -58,6 +57,7 @@ public class ChatModel {
 
     public ChatModel() {
         this.messages = new LinkedHashMap<String,ChatMessage>();
+        this.senderName = "";
     }
 
     public void addMessage(ChatMessage chatMessage,String key) {

@@ -32,6 +32,39 @@
         android:layout_below="@id/chat_date"
     >
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/chat_container">
+
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="13dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:layout_marginEnd="2dp"
+                android:alpha="0.7"
+                android:src="@drawable/ic_tick"
+                android:tint="@color/gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="6dp"
+                android:paddingStart="1dp"
+                android:paddingEnd="2dp"
+                android:id="@+id/chat_delivery_status"
+                android:alpha="0.7"
+                android:textSize="10sp"
+                android:fontFamily="@font/roboto"
+                />
+
+
+        </FrameLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

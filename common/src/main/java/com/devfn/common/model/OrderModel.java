@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class OrderModel implements Serializable {
 
@@ -94,14 +95,14 @@ public class OrderModel implements Serializable {
     public String getDateFromTimeStamp(String datePattern){
         if(datePattern.equals(""))
             datePattern = "dd MMM YYYY  HH:mm:ss";
-        SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
+        SimpleDateFormat formatter = new SimpleDateFormat(datePattern,Locale.getDefault());
         return formatter.format(new Date(Long.parseLong(this.getOrderDate())));
     }
 
     public String getDateFromTimeStamp(){
 
         String datePattern = "dd MMM YYYY  HH:mm:ss";
-        SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
+        SimpleDateFormat formatter = new SimpleDateFormat(datePattern, Locale.getDefault());
 
         String date =  formatter.format(new Date(Long.parseLong(this.getOrderDate())));
         return date;

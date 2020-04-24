@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.devfn.common.model.ChatMessage;
 import com.devfn.common.model.ChatModel;
@@ -21,12 +20,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class Messages extends AppCompatActivity {
@@ -38,7 +42,7 @@ public class Messages extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private boolean chatFound;
     private FirebaseUser user;
-    private TextView message,date;
+    private TextView message,date,seenBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,7 @@ public class Messages extends AppCompatActivity {
         container = findViewById(R.id.messages_item);
         message = findViewById(R.id.messages_first_message);
         date = findViewById(R.id.messages_time);
-
+        seenBadge = findViewById(R.id.messages_new_badge);
         chatFound = false;
 
 
@@ -84,10 +88,12 @@ public class Messages extends AppCompatActivity {
         super.onDestroy();
         if(progressDialog.isShowing())
             progressDialog.dismiss();
+        if(chatReference!=null && valueEventListener!=null)
+            chatReference.removeEventListener(valueEventListener);
     }
 
     private void readData() {
-        chatReference.child(user.getUid()).child("messages").addValueEventListener(valueEventListener);
+        chatReference.child(user.getUid()).addValueEventListener(valueEventListener);
 
     }
 
@@ -95,32 +101,75 @@ public class Messages extends AppCompatActivity {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            GenericTypeIndicator<Map<String,ChatMessage>> genericTypeIndicator = new GenericTypeIndicator<Map<String, ChatMessage>>() {};
-            Map<String,ChatMessage> map = dataSnapshot.getValue(genericTypeIndicator);
-            if(map != null){
-                for(ChatMessage cm:map.values()){
-                    if(!cm.getStatus().equals("3-1") ){
-                        chatMessage = cm;
-                        setChatData();
-                        break;
+            if(dataSnapshot.exists()){
+                ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
+                Map<String,ChatMessage> map = chatModel.getMessages();
+
+                if(map == null){
+                    if(date.getVisibility() == View.VISIBLE){
+                        date.setVisibility(View.GONE);
+                        message.setText("Chat Now");
+                        message.setTextColor(getResources().getColor(R.color.PaleVioletRed));
+                    }
+                }
+                else{
+                    Collection<ChatMessage> values = map.values();
+                    List<ChatMessage> array = new ArrayList<>(values);
+
+                    Collections.sort(array, new Comparator<ChatMessage>() {
+                        public int compare(ChatMessage o1, ChatMessage o2) {
+                            Date a = new Timestamp(Long.parseLong(o1.getTimeStamp()));
+                            Date b = new Timestamp(Long.parseLong(o2.getTimeStamp()));
+                            return b.compareTo(a);
+                        }
+                    });
+
+                    for(ChatMessage message:array) {
+                        if(!message.getStatus().equals("3-1") ){
+                            chatMessage =message;
+                            setChatData();
+                            break;
+                        }
+                    }
+
+                    int seenCounter = 0;
+                    for(ChatMessage message:array){
+                        if(!message.getChatId().equals(user.getUid())){
+                            if(!message.getIsSeen())
+                                seenCounter++;
+                        }
+                    }
+
+                    if(seenCounter!=0){
+                        if(seenBadge.getVisibility()==View.GONE)
+                            seenBadge.setVisibility(View.VISIBLE);
+                        seenBadge.setText(String.valueOf(seenCounter));
+
                     }
                 }
             }
-            else{
-                if(date.getVisibility() == View.VISIBLE){
-                    date.setVisibility(View.GONE);
-                    message.setText("Chat Now");
-                    message.setTextColor(getResources().getColor(R.color.PaleVioletRed));
-
-                }
-            }
         }
-
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
 
         }
     };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(chatReference!=null && valueEventListener!=null)
+            chatReference.addValueEventListener(valueEventListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(chatReference!=null && valueEventListener!=null)
+            chatReference.removeEventListener(valueEventListener);
+    }
+
+
 
     private void setChatData() {
 
@@ -130,9 +179,11 @@ public class Messages extends AppCompatActivity {
             message.setTextColor(getResources().getColor(R.color.gray));
         }
 
-        message.setText(chatMessage.getMessage());
-        PrettyTime time = new PrettyTime();
-        date.setText(time.format(new Date(Long.parseLong(chatMessage.getTimeStamp()))));
+            message.setText(chatMessage.getMessage());
+            PrettyTime time = new PrettyTime();
+            date.setText(time.format(new Date(Long.parseLong(chatMessage.getTimeStamp()))));
+
+
     }
 
 }

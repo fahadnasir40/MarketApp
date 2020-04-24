@@ -1,40 +1,31 @@
 package com.devfn.mart.adapters;
 
 import android.content.Context;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.devfn.common.model.ChatMessage;
-import com.devfn.common.model.ChatModel;
 import com.devfn.mart.R;
-import com.devfn.mart.activities.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.ocpsoft.prettytime.PrettyTime;
 
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder>{
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
@@ -42,7 +33,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context   mContext;
     public FirebaseUser firebaseUser;
 
-    public MessageAdapter(List<ChatMessage> messageList, Context mContext) {
+    public ChatAdapter(List<ChatMessage> messageList, Context mContext) {
         this.messageList = messageList;
         this.mContext     = mContext;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -68,6 +59,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         ChatMessage message = messageList.get(position);
         holder.showMessage.setText(message.getMessage());
         holder.messageTime.setText(message.getDateFromTimeStamp("h:mm a"));
+
+        if(holder.getItemViewType() == 1){
+            if(message.getIsSeen()){
+                holder.deliveryStatus.setText("R");
+            }
+            else if(message.getStatus().equals("3")){
+                holder.deliveryStatus.setText("D");
+            }
+            else{
+                holder.deliveryStatus.setText("N");
+            }
+        }
 
         long previousTs = 0;
         boolean side,change = false;
@@ -139,6 +142,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         private TextView showMessage,messageTime;
         private TextView dateMessage;
+        private TextView deliveryStatus;
         private ConstraintLayout container;
 
 
@@ -146,6 +150,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             super(itemView);
 
 
+            deliveryStatus = itemView.findViewById(R.id.chat_delivery_status);
             dateMessage = itemView.findViewById(R.id.chat_date);
             showMessage = itemView.findViewById(R.id.chat_show_message);
             messageTime = itemView.findViewById(R.id.chat_time);

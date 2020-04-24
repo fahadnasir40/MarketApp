@@ -43,88 +43,92 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.cardview.widget.CardView
-
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar_messages"
-        android:layout_margin="8dp">
+        android:id="@+id/messages_rts_card"
+        >
+            <RelativeLayout
 
-        <RelativeLayout
+                android:id="@+id/messages_item"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="8dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/messages_rts_logo"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/rts_seller_logo"/>
+
+                <TextView
+                    android:id="@+id/message_rts_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textSize="14sp"
+                    android:padding="2dp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto"
+                    android:layout_toEndOf="@id/messages_rts_logo"
+                    android:layout_centerVertical="true"
+
+                    />
+
+                <TextView
+                    android:id="@+id/messages_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="1dp"
+                    android:fontFamily="@font/roboto_light"
+                    android:textColor="@color/gray"
+                    android:visibility="gone"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/badge_circle"
+                    android:id="@+id/messages_new_badge"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="69"
+                    android:textColor="#FFF"
+                    android:textSize="10sp"
+                    android:visibility="gone"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/messages_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:padding="2dp"
+                    android:alpha="0.8"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="14sp"/>
+
+            </RelativeLayout>
 
 
-            android:id="@+id/messages_item"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="8dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/messages_image_messages"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="4dp"
-                />
-
-            <TextView
-                android:id="@+id/message_store_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RTS Store Team"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="2dp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/roboto"
-                android:layout_toEndOf="@id/messages_image_messages"
-
-            />
-
-            <TextView
-                android:id="@+id/messages_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/message_store_title"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="4dp"
-
-                android:layout_toEndOf="@id/messages_image_messages"
-                android:fontFamily="@font/roboto_light"
-                android:text="2 mins ago"
-
-                android:textSize="12sp" />
-
-            <TextView
-
-                android:id="@+id/messages_first_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="This is my first Emasd1231231231231k"
-                android:layout_marginTop="6dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginEnd="32dp"
-
-                android:fontFamily="@font/roboto"
-                android:layout_below="@id/messages_time"
-                android:layout_toEndOf="@id/messages_image_messages"
-
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/badge_circle"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="4dp"
-                android:text="69"
-                android:textColor="#FFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_messages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/messages_rts_card"
+        android:paddingTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"/>
 
 
 </RelativeLayout>

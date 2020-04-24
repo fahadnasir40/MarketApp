@@ -7,9 +7,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devfn.common.model.PostItem;
+import com.devfn.common.model.User;
 import com.devfn.seller.R;
 import com.devfn.seller.adapters.ItemAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,17 +44,22 @@ public class MainActivitySeller extends AppCompatActivity {
 
     private Button createPostButton,ordersButton;
     private Toolbar toolbar;
+    private User user;
     private RecyclerView recyclerView;
     private List<PostItem> postsList;
     private ItemAdapter itemAdapter;
-    private DatabaseReference databaseReference;
+    private DatabaseReference postReference,databaseReference,connectionRef,disconnectRef;
     private TextView noItemsText;
+    private boolean listenerAdded;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_seller);
 
+
+        listenerAdded = false;
         toolbar = findViewById(R.id.home_toolbar);
         toolbar.setTitle("");
         toolbar.setSubtitle("");
@@ -77,14 +85,47 @@ public class MainActivitySeller extends AppCompatActivity {
             }
         });
 
+
         recyclerView = findViewById(R.id.home_items_list);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
-        databaseReference = FirebaseDatabase.getInstance().getReference("posts");
+        postReference = FirebaseDatabase.getInstance().getReference("posts");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        String userId=  FirebaseAuth.getInstance().getUid();
+        connectionRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        disconnectRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
         checkSessionInfo();
         readAllPosts();
 
-
+        disconnectRef.child("status").onDisconnect().setValue("Offline");
+        disconnectRef.child("statusTimestamp").onDisconnect().setValue(String.valueOf(System.currentTimeMillis()));
     }
+
+    private ValueEventListener connectionEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            boolean connected = dataSnapshot.getValue(Boolean.class);
+            if (connected) {
+                String userId = FirebaseAuth.getInstance().getUid();
+                if(user!=null){
+                    if(user.getStatus().equals("Offline") && user.getVisibility().equals("visible")){
+                        databaseReference.child("users").child(userId).child("status").setValue("Online");
+                        databaseReference.child("users").child(userId).child("statusTimestamp").setValue(String.valueOf(System.currentTimeMillis()));
+                    }
+                }
+                Log.d("Connection", "connected");
+            } else {
+
+                Log.d("Connection", "not connected");
+            }
+
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     void checkSessionInfo(){
 
@@ -102,22 +143,27 @@ public class MainActivitySeller extends AppCompatActivity {
 
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
                             String uid = FirebaseAuth.getInstance().getUid();
-                            ref.child(uid).child("device_token").addValueEventListener(new ValueEventListener() {
+                            ref.child(uid).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.exists()){
-                                        String token = dataSnapshot.getValue(String.class);
-                                        if(!currentToken.equals(token)){
+                                        user = dataSnapshot.getValue(User.class);
+                                        String token = user.getDevice_token();;
+                                        if(token != null && !currentToken.equals(token)){
                                             Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
                                             logout(true);
                                         }
-                                    }
-                                    else if(FirebaseAuth.getInstance().getUid() != null){
-                                        Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
-                                        logout(true);
-                                    }
-                                }
-
+                                        else if( token == null){
+                                            if(FirebaseAuth.getInstance().getUid() != null){
+                                                Toast.makeText(getApplicationContext(),"Session Expired. Please Sign In",Toast.LENGTH_SHORT).show();
+                                                logout(true);
+                                            }
+                                        }
+                                        if(!listenerAdded){
+                                            connectionRef.addValueEventListener(connectionEventListener);
+                                            listenerAdded = true;
+                                        }
+                                    }                                }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -125,11 +171,16 @@ public class MainActivitySeller extends AppCompatActivity {
                             });
                         }
                     });
+
         }
 
     }
 
 
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
 
     void readAllPosts(){
 
@@ -138,7 +189,7 @@ public class MainActivitySeller extends AppCompatActivity {
         itemAdapter = new ItemAdapter(postsList, MainActivitySeller.this);
         recyclerView.setAdapter(itemAdapter);
 
-        Query query = databaseReference.orderByChild("datePosted");
+        Query query = postReference.orderByChild("datePosted");
         query.addChildEventListener(childEventListener);
     }
 
@@ -230,14 +281,17 @@ public class MainActivitySeller extends AppCompatActivity {
 
     private void logout(boolean sessionExpired){
 
-
-        if(!sessionExpired){
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-            String uid = FirebaseAuth.getInstance().getUid();
-            ref.child(uid).child("device_token").removeValue();
+        String userId = FirebaseAuth.getInstance().getUid();
+        if(userId!=null){
+            if(!sessionExpired){
+                databaseReference.child("users").child(userId).child("device_token").removeValue();
+            }
+            databaseReference.child("users").child(userId).child("status").setValue("Offline");
+            databaseReference.child("users").child(userId).child("statusTimestamp").setValue(String.valueOf(System.currentTimeMillis()));
         }
 
-        databaseReference.removeEventListener(childEventListener);
+        postReference.removeEventListener(childEventListener);
+
 
         FirebaseAuth.getInstance().signOut();
 
@@ -247,5 +301,11 @@ public class MainActivitySeller extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(connectionRef !=null && childEventListener!=null)
+            connectionRef.removeEventListener(connectionEventListener);
 
+    }
 }

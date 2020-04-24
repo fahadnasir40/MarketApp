@@ -1,7 +1,8 @@
 package com.devfn.seller.adapters;
 
 import android.content.Context;
-import android.view.ContextMenu;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,145 +10,123 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.devfn.common.model.ChatMessage;
+import com.devfn.common.model.ChatModel;
 import com.devfn.seller.R;
+import com.devfn.seller.activities.ChatSeller;
+import com.devfn.seller.activities.Messages;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.sql.Timestamp;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder>{
 
-    public static final int MSG_TYPE_LEFT = 0;
-    public static final int MSG_TYPE_RIGHT = 1;
+    private List<HashMap<String,Object>> messageList;
+    private Context   mContext;
 
-    private List<ChatMessage> messageList;
-    private Context        mContext;
-    public FirebaseUser firebaseUser;
-
-    public MessageAdapter(List<ChatMessage> messageList, Context mContext) {
+    public MessageAdapter(List<HashMap<String,Object>> messageList, Context mContext) {
         this.messageList = messageList;
-        this.mContext     = mContext;
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        this.mContext = mContext;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == MSG_TYPE_LEFT){
-            View v = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left,parent,false);
-            return new ViewHolder(v);
-        }
-        else {
-            View v = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right,parent,false);
-            return new ViewHolder(v);
-        }
+        View v = LayoutInflater.from(mContext).inflate(R.layout.message_item,parent,false);
+        return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
-        ChatMessage message = messageList.get(position);
-        holder.showMessage.setText(message.getMessage());
-        holder.messageTime.setText(message.getDateFromTimeStamp("h:mm a"));
+        final HashMap<String,Object> objectHashMap = messageList.get(position);
+        final ChatMessage chatMessage = (ChatMessage)objectHashMap.get("messageObject");
 
-        long previousTs = 0;
-        boolean side,change = false;
+        if(holder.date.getVisibility() == View.VISIBLE && chatMessage == null){
+            holder.date.setVisibility(View.GONE);
+            holder.message.setText("Chat Now");
+            holder.message.setTextColor(mContext.getResources().getColor(R.color.PaleVioletRed));
+        }
+        else{
 
-        side = holder.getItemViewType() == 1;
+            if(chatMessage!=null){
+                holder.message.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
+                holder.message.setText(chatMessage.getMessage());
+                if(holder.date.getVisibility()==View.GONE)
+                    holder.date.setVisibility(View.VISIBLE);
+                PrettyTime time = new PrettyTime();
+                holder.date.setText(time.format(new Date(Long.parseLong(chatMessage.getTimeStamp()))));
 
-        if(position < messageList.size() - 1){
-            ChatMessage pm = messageList.get(position+1);
-            previousTs = Long.parseLong(pm.getTimeStamp());
-            if(side != checkType(position+1))
-                change = true;
+                String seenCounter = String.valueOf(objectHashMap.get("seenCounter"));
+
+                if(!seenCounter.equals("0")){
+                    if(holder.seenBadge.getVisibility()==View.GONE)
+                        holder.seenBadge.setVisibility(View.VISIBLE);
+                    holder.seenBadge.setText(seenCounter);
+                }
+
+
+            }
         }
 
-        setTimeTextVisibility(Long.parseLong(message.getTimeStamp()), previousTs, holder.dateMessage,change);
+        final String senderName = (String)objectHashMap.get("senderName");
+
+        holder.senderName.setText(senderName);
+        if(senderName!=null && !senderName.equals(""))
+         holder.iconText.setText( senderName.substring(0,1).toUpperCase());
+
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, ChatSeller.class);
+
+                String userId = (String)objectHashMap.get("senderId");
+                intent.putExtra("senderName",senderName);
+                intent.putExtra("senderId",userId);
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 
-    private void setTimeTextVisibility(long ts1, long ts2, TextView timeText,boolean change){
 
-
-        Date a = new Timestamp(ts1);
-        Date b = new Timestamp(ts2);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-
-        timeText.setVisibility(View.GONE);
-        if(change){
-            timeText.setPadding(0,0,0,0);
-            timeText.setTextSize(0);
-            timeText.setVisibility(View.INVISIBLE);
-
-        }
-
-        if(formatter.format(b).compareTo(formatter.format(a)) < 0){
-            timeText.setVisibility(View.VISIBLE);
-            SimpleDateFormat formatter2 = new SimpleDateFormat("d MMM YYYY", Locale.US);
-            timeText.setText(formatter2.format(new Date(ts1)));
-        }
-
-    }
-
-    String getFormattedNumber(int number){
-        NumberFormat myFormat = NumberFormat.getInstance();
-        myFormat.setGroupingUsed(true); // this will also round numbers, 3
-        return myFormat.format(number);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-
-        if(checkType(position))
-            return  MSG_TYPE_RIGHT;
-        else
-            return  MSG_TYPE_LEFT;
-    }
-
-    boolean checkType(int position){
-        if(messageList.get(position).getChatId().equals(firebaseUser.getUid()))
-            return true;
-        return false;
-    }
 
     @Override
     public int getItemCount() {
         return messageList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView showMessage,messageTime;
-        private TextView dateMessage;
-        private ConstraintLayout container;
+        private TextView senderName,message,iconText;
+        private TextView date;
+        private TextView seenBadge;
+        private RelativeLayout container;
 
         ViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-            dateMessage = itemView.findViewById(R.id.chat_date);
-            showMessage = itemView.findViewById(R.id.chat_show_message);
-            messageTime = itemView.findViewById(R.id.chat_time);
-            container = itemView.findViewById(R.id.chat_container);
-
-            container.setOnCreateContextMenuListener(this);
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            contextMenu.setHeaderTitle("Select the Action");
-            contextMenu.add(this.getAdapterPosition(), 101, 0, "Copy");
-            contextMenu.add(this.getAdapterPosition(), 102, 1, "Delete");
+            container = itemView.findViewById(R.id.messages_item);
+            message = itemView.findViewById(R.id.messages_first_message);
+            date = itemView.findViewById(R.id.messages_time);
+            seenBadge = itemView.findViewById(R.id.messages_new_badge);
+            senderName = itemView.findViewById(R.id.messages_sender_name);
+            iconText = itemView.findViewById(R.id.messages_icon_text);
         }
     }
 }
