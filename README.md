@@ -2,7 +2,7 @@
 ## Android ecommerce application
 
 
-RTS Store is an ecommerce cloud-enabled, mobile-ready market application,
+RTS Store is an ecommerce cloud-enabled, mobile-ready market application.
 ## Features
 - Java
 - Android
@@ -14,6 +14,7 @@ RTS Store is an ecommerce cloud-enabled, mobile-ready market application,
 
 ## Installation
 
+Checkout to RTS_Store branch for latest implementation of code.
 Check firebase documentation to configure with your application.
 
 ## Screenshots
